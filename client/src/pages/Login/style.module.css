@@ -1,0 +1,125 @@
+/* style.module.css */
+
+:root {
+  --background-color: #1e1e1e;
+  --input-background-color: #2a2a2a;
+  --text-color: #ffffff;
+  --placeholder-color: #bbbbbb;
+  --button-background-color: #104e81;
+  --button-text-color: #ffffff;
+  --link-color: #00bfff;
+  --border-color: #3a3a3a;
+  --secondary-button-background-color: #28a745; /* Green color */
+  --secondary-button-text-color: #ffffff;
+  --warning-button-background-color: #e0b32c; /* Warning color */
+  --warning-button-text-color: #ffffff;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+.login-form {
+  background-color: var(--background-color);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  width: 500px;
+}
+
+.login-form h3 {
+  color: var(--text-color);
+}
+
+.input-form {
+  background-color: var(--input-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.input-form::placeholder {
+  color: var(--placeholder-color);
+}
+
+.input-form:focus {
+  background-color: var(
+    --input-background-color
+  ); /* Keeps background color on focus */
+  color: var(--text-color); /* Keeps text color on focus */
+  border-color: var(--border-color); /* Keeps border color on focus */
+  outline: none; /* Removes default outline */
+}
+
+/* Styles for autofill */
+.input-form:-webkit-autofill,
+.input-form:-webkit-autofill:hover,
+.input-form:-webkit-autofill:focus,
+.input-form:-webkit-autofill:active {
+  background-color: var(--input-background-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--input-background-color) inset !important;
+  box-shadow: 0 0 0px 1000px var(--input-background-color) inset !important;
+  -webkit-text-fill-color: var(--text-color) !important;
+}
+
+.btn-primary {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.btn-primary:hover {
+  background-color: #005bb5; /* Slightly darker blue */
+}
+
+.btn-secondary {
+  background-color: var(--secondary-button-background-color);
+  color: var(--secondary-button-text-color);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #218838; /* Slightly darker green */
+}
+
+.btn-warning {
+  background-color: var(--warning-button-background-color);
+  color: var(--warning-button-text-color);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800; /* Slightly darker yellow */
+}
+
+#register-link {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+#register-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,74 @@
+{
+  "name": "message-sender",
+  "version": "1.0.0",
+  "description": "Send messages via Telegram",
+  "author": "Vermilion",
+  "main": "main.js",
+  "homepage": "./",
+  "scripts": {
+    "start:server": "cd backend && npm run start",
+    "start:client": "cd client && npm run start",
+    "build": "cd client && npm run build",
+    "start:electron": "npm run build && electron .",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "dependencies": {
+    "react-hot-toast": "^2.4.1",
+    "telegram": "^2.22.2",
+    "axios": "^1.3.4",
+    "bcryptjs": "^2.4.3",
+    "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.4.5",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.7.2",
+    "react-bootstrap-icons": "^1.10.2",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.9.0",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.2",
+    "web-vitals": "^2.1.0",
+    "electron-squirrel-startup": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/css-modules": "^1.0.5",
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
+    "constants-browserify": "^1.0.0",
+    "crypto-browserify": "^3.12.0",
+    "electron": "^26.6.10",
+    "electron-builder": "^24.13.3",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.5"
+  },
+  "build": {
+    "appId": "com.example.app",
+    "files": [
+      "client/build/**/*",
+      "main.js"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "browser": {
+    "crypto": false,
+    "http": false,
+    "https": false
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

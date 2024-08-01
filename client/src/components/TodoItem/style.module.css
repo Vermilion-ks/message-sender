@@ -1,0 +1,70 @@
+.container {
+  display: flex;
+  width: 97%;
+  height: 75px;
+  flex-direction: row;
+  border-radius: 10px;
+  align-items: center;
+  background: #2b2d31;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Плавный переход цвета фона */
+  opacity: 0; /* Начальная невидимость */
+  transform: translateY(20px); /* Начальная позиция для анимации */
+  animation: fadeIn 0.5s forwards; /* Запуск анимации */
+}
+
+/* Анимация для плавного появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container:hover {
+  background-color: #35373c; /* Цвет фона при наведении */
+}
+
+.container.selected {
+  background-color: #35373c;
+}
+
+.image {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.phone {
+  font-size: 16px;
+  color: #9d9a9a;
+}
+
+.deleteButton {
+  background: none; /* Без фона для прозрачности */
+  border: none; /* Убираем стандартные границы кнопки */
+  cursor: pointer; /* Изменяем курсор на указатель */
+  display: flex;
+  flex-direction: column;
+  right: 50px; /* Располагаем кнопку справа */
+  top: 50%; /* Центрируем кнопку по вертикали */
+  transform: translateY(-50%); /* Корректируем центрирование по вертикали */
+}

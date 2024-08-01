@@ -1,0 +1,14 @@
+/* toast.module.css */
+.customToast {
+  background-color: #333;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.customToastBody {
+  font-size: 16px;
+}
+
+.customToastClose {
+  color: #fff;
+}

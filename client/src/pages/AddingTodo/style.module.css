@@ -1,0 +1,63 @@
+/* AddingTodo.module.css */
+.modalBody {
+  padding: 20px;
+  background-color: #212121; /* Цвет фона тела модального окна */
+  border: 1px solid rgb(61, 61, 61);
+  border-radius: 15px;
+}
+
+.modalInput {
+  background-color: #2c2c2c; /* Цвет фона инпута */
+  color: #e0e0e0; /* Цвет текста в инпуте */
+  border: 1px solid #444; /* Цвет границы инпута */
+  padding: 10px; /* Внутренние отступы */
+  border-radius: 5px; /* Закругление углов инпута */
+  width: 100%; /* Ширина инпута */
+  box-sizing: border-box; /* Включаем границы и внутренние отступы в общую ширину */
+}
+
+.modalInput::placeholder {
+  color: #888; /* Цвет текста в placeholder */
+  opacity: 1; /* Убираем прозрачность, если требуется */
+}
+
+.modalInput:focus {
+  border-color: #303132; /* Цвет границы при фокусе */
+  background-color: #3a3a3a; /* Цвет фона при фокусе */
+  color: #e0e0e0; /* Цвет текста при фокусе */
+  outline: none; /* Убираем стандартную обводку браузера */
+}
+
+.btnAdd {
+  margin-top: 10px;
+  background-color: #007bff; /* Основной цвет кнопки */
+  border: none; /* Убираем границу */
+  color: white; /* Цвет текста кнопки */
+  padding: 10px 20px; /* Отступы кнопки */
+  border-radius: 5px; /* Закругление углов кнопки */
+  cursor: pointer; /* Курсор в виде указателя при наведении */
+  transition: background-color 0.3s ease; /* Плавное изменение цвета фона при наведении */
+}
+
+.btnAdd:hover {
+  background-color: #0056b3; /* Цвет кнопки при наведении */
+}
+
+.modalHeader {
+  background-color: #5f5a5a; /* Цвет фона заголовка модального окна */
+  color: rgb(22, 20, 20); /* Цвет текста заголовка */
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalContent {
+  background-color: #201f1f; /* Цвет фона модального окна */
+  border: 1px solid #0f0f0f; /* Цвет границы модального окна */
+}
+
+.modalDialog {
+  max-width: 600px; /* Ширина модального окна */
+}

@@ -1,0 +1,44 @@
+/* Spinner.module.css */
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center; /* Центрирует спиннер по горизонтали */
+  align-items: center; /* Центрирует спиннер по вертикали */
+  height: 100%; /* Убедитесь, что контейнер имеет высоту, чтобы спиннер был по центру блока */
+  width: 100%; /* Убедитесь, что контейнер имеет ширину, чтобы спиннер был по центру блока */
+}
+
+.spinner {
+  width: 80px;
+  text-align: center;
+}
+
+.bounce1,
+.bounce2,
+.bounce3 {
+  width: 16px;
+  height: 16px;
+  background-color: #113d6d; /* Цвет спиннера */
+  border-radius: 100%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out;
+}
+
+.bounce2 {
+  animation-delay: -0.32s;
+}
+
+.bounce3 {
+  animation-delay: -0.64s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}

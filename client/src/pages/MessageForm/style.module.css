@@ -1,0 +1,99 @@
+/* Анимация для плавного появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.messageForm {
+  display: flex;
+  flex-direction: column;
+
+  background-color: #2b2d31; /* Светлый фон */
+
+  max-width: 520px;
+  max-height: 150px;
+  margin-top: 25px;
+  margin-left: 25px; /* Убираем горизонтальные отступы, чтобы форма была в левой части */
+  align-items: flex-start; /* Выравнивание элементов по левому краю */
+  opacity: 0; /* Начальная невидимость */
+  transform: translateY(20px); /* Начальная позиция для анимации */
+  animation: fadeIn 0.5s forwards; /* Запуск анимации */
+}
+
+.countText {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+.messageCount {
+  width: 100px;
+  background-color: #2b2d31;
+  color: #fff;
+  border: 1px solid #666;
+  margin-bottom: 10px;
+}
+
+.messageForm textarea {
+  width: 520px; /* Используем 100% ширину родительского контейнера */
+  height: 200px; /* Уменьшаем высоту, чтобы форма была более компактной */
+  padding: 10px;
+  border-radius: 5px;
+  height: 80px;
+  border: 1px solid rgb(49, 49, 49);
+  resize: none;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ffffff;
+  background-color: #383a3c; /* Белый фон для текстовой области */
+  font-size: 18px; /* Размер текста */
+  line-height: 1.6; /* Высота строки для улучшения читаемости */
+}
+
+.messageForm textarea::placeholder {
+  color: #aaa;
+}
+
+.messageForm .buttonContainer {
+  display: flex;
+  justify-content: flex-end; /* Выравнивание кнопок по правому краю */
+  gap: 10px; /* Расстояние между кнопками */
+  margin-top: 10px; /* Отступ сверху для кнопок */
+  width: 100%; /* Занимает всю ширину родительского контейнера */
+}
+
+.messageForm button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #113d6d; /* Основной цвет кнопок */
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.messageForm button:hover {
+  background-color: #0056b3; /* Темный оттенок при наведении */
+}
+
+.messageForm button + button {
+  background-color: #6c757d; /* Цвет для кнопки "Закрыть" */
+}
+
+.messageForm button:disabled {
+  background-color: #007bff; /* Цвет кнопки в состоянии "disabled" */
+  opacity: 0.6; /* Прозрачность кнопки в состоянии "disabled" */
+  cursor: not-allowed; /* Курсор при наведении на неактивную кнопку */
+}
+
+.messageForm button + button:hover {
+  background-color: #5a6268; /* Темный оттенок для "Закрыть" */
+}

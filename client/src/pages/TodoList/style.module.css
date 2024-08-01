@@ -1,0 +1,334 @@
+/* Основные стили для контейнеров */
+.container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh; /* Занимает 100% высоты экрана */
+  background-color: #2b2d31;
+}
+
+.dialoguesWrapper {
+  height: 100vh;
+  background-color: #313338;
+}
+
+.messageSenderWrapper {
+  height: 100vh;
+  background-color: #2b2d31;
+  width: 560px;
+}
+/* Анимация для плавного появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Элемент с классом animating получает анимацию */
+.animating {
+  opacity: 0; /* Начальная невидимость */
+  transform: translateY(20px); /* Начальная позиция для анимации */
+  animation: fadeIn 0.5s forwards; /* Запуск анимации */
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  width: 75px;
+  height: 100vh; /* Занимает 100% высоты экрана */
+  border-right: 1px solid #666;
+}
+
+.profilesTable {
+  height: 100vh;
+  max-height: 100vh;
+  width: 350px;
+  overflow-y: auto; /* Добавляет вертикальную прокрутку, если содержимое выходит за пределы блока */
+  background-color: #2b2d31;
+}
+
+.btn {
+  width: 73px;
+  height: 75px;
+  background-color: #2b2d31;
+  border: 0px solid #2f3030;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход цвета фона и текста */
+}
+
+.btn:hover {
+  background-color: #2c2c2c; /* Цвет фона при наведении */
+  color: rgb(0, 0, 0); /* Цвет текста при наведении */
+}
+/* Стили для полосы прокрутки */
+.profilesTable::-webkit-scrollbar {
+  width: 1px; /* Ширина полосы прокрутки */
+}
+
+.profilesTable::-webkit-scrollbar-track {
+  background: #333; /* Цвет фона трека прокрутки */
+}
+
+.profilesTable::-webkit-scrollbar-thumb {
+  background: #666; /* Цвет ползунка прокрутки */
+  border-radius: 4px; /* Скругление углов ползунка */
+}
+
+.profilesTable::-webkit-scrollbar-thumb:hover {
+  background: #888; /* Цвет ползунка при наведении */
+}
+
+.dialogues {
+  max-height: 95vh;
+  width: 500px;
+  overflow-y: auto; /* Добавляет вертикальную прокрутку, если содержимое выходит за пределы блока */
+  background-color: #313338;
+
+  transition: background-color 0.3s ease; /* Плавный переход цвета фона */
+}
+
+.profilesHeader {
+  width: 350px;
+  height: 50px;
+  background-color: #2b2d31;
+  transition: background-color 0.3s ease;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+.dialoguesHeader {
+  width: 500px;
+  height: 50px;
+  background-color: #313338;
+  border-left: 1px solid #302f2f;
+  transition: background-color 0.3s ease;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.senderHeader {
+  width: 550px;
+  height: 50px;
+  background-color: #2b2d31;
+  border-left: 1px solid #302f2f;
+  transition: background-color 0.3s ease;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Стили для полосы прокрутки */
+.dialogues::-webkit-scrollbar {
+  width: 1px; /* Ширина полосы прокрутки */
+}
+
+.dialogues::-webkit-scrollbar-track {
+  background: #333; /* Цвет фона трека прокрутки */
+}
+
+.dialogues::-webkit-scrollbar-thumb {
+  background: #666; /* Цвет ползунка прокрутки */
+  border-radius: 4px; /* Скругление углов ползунка */
+}
+
+.dialogues::-webkit-scrollbar-thumb:hover {
+  background: #888; /* Цвет ползунка при наведении */
+}
+
+.dialogue {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #313338;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  height: 75px;
+  width: 97%;
+  margin-left: 8px;
+}
+
+.dialogue:hover {
+  border-radius: 10px;
+  background-color: #2c2c2c;
+}
+
+.dialogue.selected {
+  background-color: #2f3030;
+}
+
+.dialogue img {
+  width: 60px; /* Задать ширину изображения */
+  height: 60px; /* Задать высоту изображения */
+  border-radius: 25px; /* Сделать изображение кругом */
+  margin-right: 10px; /* Отступ справа от изображения */
+}
+
+.dialogueDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialogueTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.dialogueParticipants {
+  color: #888;
+  font-size: 17px;
+}
+
+/* Firefox стили */
+.profilesTable {
+  scrollbar-width: thin;
+  scrollbar-color: #666 #333;
+}
+
+.dialogues {
+  scrollbar-width: thin;
+  scrollbar-color: #666 #333;
+}
+
+.dialogDetailsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+}
+
+.dialogDetails {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #2b2d31; /* Цвет фона такой же, как у диалогов */
+  padding: 15px; /* Общий отступ */
+  border-radius: 5px; /* Скругление углов, чтобы соответствовать дизайну */
+  height: auto; /* Высота автоматически подстраивается под содержимое */
+  width: 550px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.dialogDetails h3 {
+  font-weight: 600;
+  font-size: 17px;
+  color: #ffffff; /* Цвет текста такой же, как у заголовков в диалогах */
+  margin-top: 0; /* Убираем верхний отступ для заголовка */
+}
+
+.dialogDetails p {
+  color: #ffffff; /* Цвет текста параграфов */
+  margin: 5px 0; /* Отступы сверху и снизу */
+}
+
+.dialogDetails strong {
+  font-weight: 400;
+  font-size: 17px;
+  color: #888; /* Цвет текста для выделенных частей */
+}
+
+.participantContainer {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px;
+  background-color: #2b2d31;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  height: 75px;
+  width: 97%;
+  margin-left: 8px;
+  justify-content: space-between;
+  transition: background-color 0.2s, height 0.5s ease;
+}
+
+.participantDetails {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.participantsTable {
+  height: 100vh;
+  max-height: 55vh;
+  margin-top: 15px;
+  margin-left: 10px;
+  width: 550px;
+  overflow-y: auto; /* Добавляет вертикальную прокрутку, если содержимое выходит за пределы блока */
+  background-color: #2b2d31;
+}
+
+.participantsTable::-webkit-scrollbar {
+  width: 1px; /* Ширина полосы прокрутки */
+}
+
+.participantsTable::-webkit-scrollbar-track {
+  background: #333; /* Цвет фона трека прокрутки */
+}
+
+.participantsTable::-webkit-scrollbar-thumb {
+  background: #666; /* Цвет ползунка прокрутки */
+  border-radius: 4px; /* Скругление углов ползунка */
+}
+
+.participantsTable::-webkit-scrollbar-thumb:hover {
+  background: #888; /* Цвет ползунка при наведении */
+}
+
+.participantContainer:hover {
+  border-radius: 10px;
+  background-color: #35373c;
+}
+
+.removeButton {
+  background: none;
+  border: none; /* Без рамки */
+  color: #2b2d31; /* Цвет текста */
+  font-size: 30px; /* Размер шрифта */
+  cursor: pointer; /* Курсор при наведении */
+  margin-top: -20px; /* Смещение кнопки вверх */
+}
+
+.participantContainer:hover .removeButton {
+  color: #a6aab2; /* Цвет текста при наведении на контейнер */
+}
+
+.image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  transition: width 0.5s ease, height 0.5s ease, border-radius 0.5s ease; /* Добавим плавный переход для border-radius */
+}
+
+.imageExpanded {
+  border-radius: 10px; /* Явно переопределяем border-radius */
+  width: 480px;
+  height: 480px;
+}
+
+.participantContainer.expanded {
+  height: 500px;
+}
