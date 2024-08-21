@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import { User } from "../models/User";
+import { API_BASE_URL } from "./consts";
 
 /**
  * Base URL
  * @type {string}
  */
-const LOGIN_API_BASE_URL =
-  process.env.API_BASE_URL || "http://localhost:8081/users";
+const LOGIN_API_BASE_URL = API_BASE_URL;
 
 class LoginService {
   /**
@@ -15,7 +15,7 @@ class LoginService {
    * @returns {Promise<axios.AxiosResponse<User>>}
    */
   async register(user: User): Promise<AxiosResponse<User>> {
-    return await axios.post(LOGIN_API_BASE_URL + "/register", user);
+    return await axios.post(LOGIN_API_BASE_URL + "/users/register", user);
   }
 
   /**
@@ -26,7 +26,7 @@ class LoginService {
    * @returns {Promise<axios.AxiosResponse<User>>}
    */
   async login(user: User): Promise<AxiosResponse<User>> {
-    return await axios.post(LOGIN_API_BASE_URL + "/login", user);
+    return await axios.post(LOGIN_API_BASE_URL + "/users/login", user);
   }
 }
 

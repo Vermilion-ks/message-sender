@@ -1,11 +1,11 @@
 # Base Stage for all following stages
 # called first to install deps and profit of caching
-FROM node:16-alpine as base
+FROM node:20-alpine as base
 # Set the working directory
 WORKDIR /app
 
 # install dependencies
-COPY package*.json .
+COPY package.json .
 RUN yarn install
 
 # Build Stage

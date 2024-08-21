@@ -7,7 +7,7 @@ services:
     container_name: client
     restart: always
     ports:
-      - "3000:80"
+      - "9085:80"
     depends_on:
       - backend
     networks:
@@ -18,23 +18,15 @@ services:
     image: backend
     container_name: backend
     restart: always
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongodb
-    networks:
-      - my-network
-
-  mongodb:
-    image: mongo:latest
-    container_name: database
-    restart: always
-    ports:
-      - "27017:27017"
     environment:
-      MONGO_INITDB_DATABASE: todo
-    volumes:
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - DB_CONN_STRING=${DB_CONN_STRING}
+      - DB_NAME=${DB_NAME}
+      - DB_PROFILES_COLLECTION_NAME=${DB_PROFILES_COLLECTION_NAME}
+      - DB_USERS_COLLECTION_NAME=${DB_USERS_COLLECTION_NAME}
+      - SERVICE_PORT=${SERVICE_PORT}
+      - SERVICE_IP_ADDRESS=${SERVICE_IP_ADDRESS}
+    ports:
+      - "9084:8080"
     networks:
       - my-network
 

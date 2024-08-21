@@ -13,8 +13,13 @@ import path from "path";
 
 dotenv.config();
 
+const corsOptions = {
+    credentials: true,
+    origin: ['http://localhost:3000', 'http://localhost:9085'] // Whitelist the domains you want to allow
+};
+
 const app = express();
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Настройка пути для статических файлов
@@ -42,6 +47,8 @@ const collectionUsersName = process.env.DB_USERS_COLLECTION_NAME;
 const servicePort = process.env.SERVICE_PORT || "8081";
 const serviceIpAddress = process.env.SERVICE_IP_ADDRESS || "localhost";
 
+
+
 // Подключение к базе данных MongoDB с использованием данных из файла .env
 mongoose
   .connect(`${dbConnection}/${dbName}`, {
@@ -51,7 +58,7 @@ mongoose
   })
   .then(() => {
     // Если подключение успешно, слушаем порт
-    app.listen(parseInt(servicePort), serviceIpAddress, () => {
+    app.listen(parseInt(servicePort), () => {
       console.log(
         `App is running on: http://${serviceIpAddress}:${servicePort}`
       );
