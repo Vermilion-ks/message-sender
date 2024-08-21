@@ -309,7 +309,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 });
 
 todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
-  const { phone, dialogId, message, participans } = req.body;
+  const { phone, dialogId, message, participans, sleepTime } = req.body;
 
   const user = await TodoModel.findOne({ phone });
   if (!user) {
@@ -337,13 +337,16 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     }
 
     for (const participant of participans) {
-      console.log(participant.username);
+      // console.log(participant.username);
+      // console.log(participant.id);
+      // console.log(sleepTime);
       // Отправка сообщения
-      //await client.sendMessage(participant.id, { message });
+      //await client.sendMessage(participant.username, { message });
+      //await client.sendMessage("vermilion_ks", { message });
       // Добавляем участника в список участников, которым было отправлено сообщение
       //dialog.participants.push(participant.username);
       // Задержка в 1 секунду
-      await sleep(1000);
+      await sleep(sleepTime * 1000);
     }
 
     await dialog.save();

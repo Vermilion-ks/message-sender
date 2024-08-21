@@ -5,15 +5,21 @@ import Spinner from "../Spinner/Spinner";
 const FindForm: FC<{
   dialogId: number;
   phone: string;
-  onSend: (phone: string, dialogId: number, message: string) => Promise<void>;
+  onSend: (
+    phone: string,
+    dialogId: number,
+    message: string,
+    count: number
+  ) => Promise<void>;
   onClose: () => void;
 }> = ({ dialogId, phone, onSend }) => {
   const [message, setMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(5);
 
   const handleSend = () => {
     setIsSending(true);
-    onSend(phone, dialogId, message)
+    onSend(phone, dialogId, message, count)
       .then(() => {
         //setMessage("");
         setIsSending(false);
@@ -25,6 +31,21 @@ const FindForm: FC<{
 
   return (
     <div className={s.messageForm}>
+      <div className={s.sleepTime}>
+        <div className={s.sleepTimeText}>
+          Задержка между отправкой сообщений в секундах:
+        </div>
+        <div>
+          <input
+            type="number"
+            value={count}
+            onChange={(e) => setCount(Number(e.target.value))}
+            min="5"
+            className={s.messageCount}
+          />
+        </div>
+      </div>
+
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}

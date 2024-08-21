@@ -17,7 +17,7 @@
   background-color: #2b2d31; /* Светлый фон */
 
   max-width: 520px;
-  max-height: 150px;
+  max-height: 250px;
   margin-top: 25px;
   margin-left: 25px; /* Убираем горизонтальные отступы, чтобы форма была в левой части */
   align-items: flex-start; /* Выравнивание элементов по левому краю */
@@ -41,7 +41,7 @@
 
 .messageForm textarea {
   width: 520px; /* Используем 100% ширину родительского контейнера */
-  height: 200px; /* Уменьшаем высоту, чтобы форма была более компактной */
+  height: 300px; /* Уменьшаем высоту, чтобы форма была более компактной */
   padding: 10px;
   border-radius: 5px;
   height: 80px;
@@ -55,6 +55,15 @@
   line-height: 1.6; /* Высота строки для улучшения читаемости */
 }
 
+.sleepTime {
+  color: #aaa;
+  display: flex; /* Включаем flex-контейнер */
+  align-items: center; /* Выравниваем элементы по вертикали */
+}
+
+.sleepTimeText {
+  margin-right: 20px;
+}
 .messageForm textarea::placeholder {
   color: #aaa;
 }

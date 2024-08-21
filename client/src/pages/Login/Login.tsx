@@ -36,6 +36,7 @@ const Login: FC<LoginProps> = ({ setLoginUser }: LoginProps) => {
         password: user.password.trim(),
       })
       .then((response: AxiosResponse<User>) => {
+        console.log("response:", response);
         setLoginUser(response.data["user"] as User);
         navigate("/", { replace: true });
       })

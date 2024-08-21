@@ -4,7 +4,6 @@
   "description": "Send messages via Telegram",
   "author": "Vermilion",
   "main": "main.js",
-  "homepage": "./",
   "scripts": {
     "start:server": "cd backend && npm run start",
     "start:client": "cd client && npm run start",

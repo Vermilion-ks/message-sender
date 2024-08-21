@@ -5,7 +5,8 @@ import { User } from "../models/User";
  * Base URL
  * @type {string}
  */
-const LOGIN_API_BASE_URL = "http://localhost:8081/users";
+const LOGIN_API_BASE_URL =
+  process.env.API_BASE_URL || "http://localhost:8081/users";
 
 class LoginService {
   /**

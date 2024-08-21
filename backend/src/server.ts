@@ -36,7 +36,7 @@ app.use(
 // Чтение деталей подключения из dotenv файла
 const dbConnection = process.env.DB_CONN_STRING;
 const dbName = process.env.DB_NAME;
-const collectionTodosName = process.env.DB_TODOS_COLLECTION_NAME;
+const collectionTodosName = process.env.DB_PROFILES_COLLECTION_NAME;
 const collectionUsersName = process.env.DB_USERS_COLLECTION_NAME;
 
 const servicePort = process.env.SERVICE_PORT || "8081";

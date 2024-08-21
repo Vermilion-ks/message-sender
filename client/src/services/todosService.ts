@@ -56,7 +56,7 @@ export interface Participant {
   usernames: string | null;
   verified: boolean;
 }
-const TODOS_API_BASE_URL = "http://localhost:8081/messagesender/";
+const TODOS_API_BASE_URL = "http://localhost:8081/profiles/";
 
 class TodosService {
   async getTodosByUserId(userId: string): Promise<AxiosResponse<Profile[]>> {
@@ -136,13 +136,15 @@ class TodosService {
     phone: string,
     dialogId: number,
     message: string,
-    participans: Participant[]
+    participans: Participant[],
+    sleepTime: number
   ) {
     return axios.post(`${TODOS_API_BASE_URL}send-message/`, {
       phone,
       dialogId,
       message,
       participans,
+      sleepTime,
     });
   }
 }
