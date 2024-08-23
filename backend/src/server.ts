@@ -21,6 +21,7 @@ const corsOptions = {
     "http://localhost:9084",
     "http://localhost:9085",
     "http://localhost:80",
+    "https://message-sender.sashagoncharov19.tk",
   ],
 };
 
