@@ -81,5 +81,6 @@ app.use("/users", userRoutes);
 app.use("/pictures", picturesRoutes);
 app.use("/channels", channelsRoutes);
 app.use("/participants", participantsRoutes);
+app.use("/static", express.static("src/images"));
 
 export default app;

@@ -3,7 +3,7 @@ import s from "./style.module.css";
 import { Profile } from "../../models/Profile";
 import todoService from "../../services/todosService";
 import { Trash } from "react-bootstrap-icons";
-import {API_BASE_URL} from "../../services/consts";
+import { API_BASE_URL } from "../../services/consts";
 
 const TodoComponent: FC<ProfileProps> = ({
   profile,
@@ -37,7 +37,7 @@ const TodoComponent: FC<ProfileProps> = ({
   }
 
   const phoneWithoutPlus = profile.phone.replace(/\+/g, "");
-  const imageUrl = `${API_BASE_URL}/pictures/${phoneWithoutPlus}.jpg`;
+  const imageUrl = `${API_BASE_URL}/static/pictures/${phoneWithoutPlus}.png`;
 
   return (
     <>

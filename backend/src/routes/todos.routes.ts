@@ -6,6 +6,7 @@ import { StringSession } from "telegram/sessions";
 import { FloodWaitError } from "telegram/errors";
 import bigInt from "big-integer";
 import { promises as fs } from "fs";
+import path from "path";
 
 interface SessionInfo {
   session: string;
@@ -36,6 +37,15 @@ const apiHash = process.env.TG_API_HASH || "bdde13e3fdf54602a48147068dcec5ac";
 
 // Хранилище для временного хранения сессий по номеру телефона
 const sessions: { [key: string]: SessionInfo } = {};
+
+const saveFile = async (filePath: string, buffer: Buffer) => {
+  try {
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.writeFile(filePath, buffer);
+  } catch (err) {
+    console.error(`Failed to save file: ${err}`);
+  }
+};
 
 todoRoutes
   .route("/send-code")
@@ -110,9 +120,8 @@ todoRoutes
 
     // Установка сессии активной
     user.sessionActive = true;
-
-    // Сохранение изменений
     await user.save();
+
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
@@ -127,19 +136,28 @@ todoRoutes
       const channelDialogs = dialogs.filter((dialog: any) => dialog.isChannel);
 
       for (const dialog of channelDialogs) {
-        const entity = dialog.entity as any; // Приводим к типу any для простоты
+        const entity = dialog.entity as any;
 
         if (entity && entity.photo) {
           const cleanId = String(dialog.id).replace(/-/g, "");
-          const filePath = `../client/src/channels/${cleanId}.png`;
+          const filePath = path.resolve(
+            __dirname,
+            "../images/channels/",
+            cleanId + ".png"
+          );
 
           try {
-            await fs.access(filePath);
-          } catch (err) {
             const buffer = await client.downloadProfilePhoto(dialog as any);
-            if (buffer) {
-              await fs.writeFile(filePath, buffer);
+            if (buffer instanceof Buffer) {
+              await saveFile(filePath, buffer);
+              console.log(`Image saved to ${filePath}`);
+            } else {
+              console.error(
+                `Failed to download photo: returned value is not a Buffer`
+              );
             }
+          } catch (err) {
+            console.error(`Failed to download or save photo: ${err}`);
           }
         }
       }
@@ -150,19 +168,24 @@ todoRoutes
           dialog.title !== "JIO Financial Services | Channel"
       );
 
-      const simplifiedDialogs = filteredDialogs.map((dialog: any) => ({
-        id: dialog.id,
-        title: dialog.title,
-        isChannel: dialog.isChannel,
-        isGroup: dialog.isGroup,
-        isUser: dialog.isUser,
-        participants: dialog.entity?.participantsCount ?? 0,
-      }));
+      const simplifiedDialogs = await Promise.all(
+        filteredDialogs.map(async (dialog: any) => ({
+          id: dialog.id,
+          title: dialog.title,
+          isChannel: dialog.isChannel,
+          isGroup: dialog.isGroup,
+          isUser: dialog.isUser,
+          participants: dialog.entity?.participantsCount ?? 0,
+        }))
+      );
 
       response.json(simplifiedDialogs);
+      console.log(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to get dialogs:", error);
       response.status(500).json({ error: "Failed to get dialogs" });
+    } finally {
+      await client.disconnect();
     }
   });
 
@@ -214,7 +237,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   const { phone, dialogId, count } = req.body;
-
+  console.log("find-users:", req.body);
   const user = await TodoModel.findOne({ phone });
   if (!user) {
     return res.status(404).json({ error: "User not found" });
@@ -244,59 +267,52 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
-
     const maxPhotoId = BigInt("2000000000000000000");
 
     // Отфильтровываем участников, у которых есть фото профиля
     const participantsWithPhoto = nonAdminParticipants.filter(
       (participant: any) =>
-        participant.photo &&
-        participant.username &&
-        participant.photo.photoId &&
-        BigInt(participant.photo.photoId.value) <= maxPhotoId
+        participant.photo && participant.username && participant.photo.photoId
     );
-
-    // Текущая дата и время
-    const now = new Date();
-
-    // Получаем Unix-время в секундах
-    const unixTime = Math.floor(now.getTime() / 1000);
-
-    const participantsLastOnline = participantsWithPhoto.filter(
-      (participant: any) => participant.status
-    );
-    // Отфильтровываем участников, которым уже было отправлено сообщение
-    const participantsToSend = participantsLastOnline.filter(
+    // BigInt(participant.photo.photoId.value) <= maxPhotoId
+    // const participantsLastOnline = participantsWithPhoto.filter(
+    //   (participant: any) => participant.status
+    // );
+    //Отфильтровываем участников, которым уже было отправлено сообщение
+    const participantsToSend = participantsWithPhoto.filter(
       (participant: any) => !dialog?.participants.includes(participant.username) // Используем опциональную цепочку
     );
 
-    if (participantsToSend.length < count) {
-      return res.status(400).json({
-        error: "Not enough non-admin participants with photos in the group",
-      });
-    }
-
-    function sleep(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+    // if (participantsToSend.length < count) {
+    //   return res.status(400).json({
+    //     error: "Not enough non-admin participants with photos in the group",
+    //   });
+    // }
 
     const randomParticipants = participantsToSend
       .sort(() => 0.5 - Math.random()) // Перемешивание массива случайным образом
       .slice(0, count); // Выбор нужного количества участников
-
     for (const participant of randomParticipants) {
+      console.log(participant.username);
       const entity = participant as any; // Приводим к типу any для простоты
 
       if (entity && entity.photo) {
-        const filePath = `../client/src/participants/${entity.username}.png`;
-
+        const filePath = path.resolve(
+          __dirname,
+          "../images/participants/",
+          entity.username + ".png"
+        );
         try {
-          await fs.access(filePath);
-        } catch (err) {
           const buffer = await client.downloadProfilePhoto(entity as any);
-          if (buffer) {
-            await fs.writeFile(filePath, buffer);
+          if (buffer instanceof Buffer) {
+            await saveFile(filePath, buffer);
+          } else {
+            console.error(
+              `Failed to download photo: returned value is not a Buffer`
+            );
           }
+        } catch (err) {
+          console.error(`Failed to download or save photo: ${err}`);
         }
       }
     }
@@ -340,10 +356,10 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
       // console.log(participant.id);
       // console.log(sleepTime);
       // Отправка сообщения
-      //await client.sendMessage(participant.username, { message });
+      await client.sendMessage(participant.username, { message });
       //await client.sendMessage("vermilion_ks", { message });
       // Добавляем участника в список участников, которым было отправлено сообщение
-      //dialog.participants.push(participant.username);
+      dialog.participants.push(participant.username);
       // Задержка в 1 секунду
       await sleep(sleepTime * 1000);
     }
@@ -407,15 +423,25 @@ todoRoutes
         return response.status(404).json({ error: "No photos found" });
       }
 
-      // Скачивание первой фотографии профиля
-      const buffer = await client.downloadProfilePhoto(user);
-
-      if (buffer) {
-        const filePath = `../client/src/pictures/${user.phone}.jpg`;
-        await fs.writeFile(filePath, buffer);
-      } else {
-        console.log("Failed to download profile photo");
+      const filePath = path.resolve(
+        __dirname,
+        "../images/pictures/",
+        user.phone + ".png"
+      );
+      try {
+        const buffer = await client.downloadProfilePhoto(user);
+        if (buffer instanceof Buffer) {
+          await saveFile(filePath, buffer);
+          console.log(`Image saved to ${filePath}`);
+        } else {
+          console.error(
+            `Failed to download photo: returned value is not a Buffer`
+          );
+        }
+      } catch (err) {
+        console.error(`Failed to download or save photo: ${err}`);
       }
+
       response.status(200).json({
         message: "Code validated successfully",
         userId,

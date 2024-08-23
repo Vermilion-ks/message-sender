@@ -12,7 +12,7 @@ import { User } from "../../models/User";
 import { Profile } from "../../models/Profile";
 import AddingTodo from "../AddingTodo/AddingTodo"; // Импортируйте AddingTodo
 import { PersonPlusFill } from "react-bootstrap-icons";
-import {API_BASE_URL} from "../../services/consts";
+import { API_BASE_URL } from "../../services/consts";
 
 export interface Participant {
   accessHash: string;
@@ -282,7 +282,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
               ) : (
                 dialogs.map((dialog) => {
                   const formatedChannel = dialog.id.replace(/\-/g, "");
-                  const imageUrl = `${API_BASE_URL}/channels/${formatedChannel}.png`;
+                  const imageUrl = `${API_BASE_URL}/static/channels/${formatedChannel}.png`;
                   const phone =
                     todos.find((profile) => profile._id === selectedProfileId)
                       ?.phone || "";
@@ -357,7 +357,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                             }
                           >
                             <img
-                              src={`${API_BASE_URL}/participants/${participant.username}.png`}
+                              src={`${API_BASE_URL}/static/participants/${participant.username}.png`}
                               alt="Profile"
                               className={`${s.image} ${
                                 expandedParticipant === participant.id

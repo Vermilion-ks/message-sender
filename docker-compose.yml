@@ -28,6 +28,8 @@ services:
       - "9084:8080"
     networks:
       - my-network
+    volumes:
+      - ./images:/app/src/images/
 
 networks:
   my-network:

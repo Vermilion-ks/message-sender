@@ -43,6 +43,7 @@ userRoutes.post("/register", async (req: Request, res: Response) => {
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
+    console.log(error);
     res.status(500).json("Server error");
   }
 });
