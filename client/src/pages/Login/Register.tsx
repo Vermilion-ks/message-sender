@@ -48,8 +48,8 @@ const Register: FC = () => {
             navigate("/Login");
           })
           .catch((error) => {
-            console.error("Registration error:", error);
-            toast.error("User registered");
+            console.log("Registration error:", error);
+            toast.error("User register error");
           });
       } else {
         toast.error("Password must be at least 1 character long");

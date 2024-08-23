@@ -10,12 +10,18 @@ import participantsRoutes from "./routes/participants.routes";
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
 import path from "path";
+dotenv.config({ path: "../../.env" });
 
-dotenv.config();
+//dotenv.config();
 
 const corsOptions = {
-    credentials: true,
-    origin: ['http://localhost:3000', 'http://localhost:9085'] // Whitelist the domains you want to allow
+  credentials: true,
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:9084",
+    "http://localhost:9085",
+    "http://localhost:80",
+  ],
 };
 
 const app = express();
@@ -39,15 +45,11 @@ app.use(
 );
 
 // Чтение деталей подключения из dotenv файла
-const dbConnection = process.env.DB_CONN_STRING;
-const dbName = process.env.DB_NAME;
-const collectionTodosName = process.env.DB_PROFILES_COLLECTION_NAME;
-const collectionUsersName = process.env.DB_USERS_COLLECTION_NAME;
+export const dbConnection = process.env.DB_CONN_STRING;
+export const dbName = process.env.DB_NAME;
 
-const servicePort = process.env.SERVICE_PORT || "8081";
-const serviceIpAddress = process.env.SERVICE_IP_ADDRESS || "localhost";
-
-
+export const servicePort = process.env.SERVICE_PORT || "8080";
+export const serviceIpAddress = process.env.SERVICE_IP_ADDRESS;
 
 // Подключение к базе данных MongoDB с использованием данных из файла .env
 mongoose
@@ -74,8 +76,8 @@ mongoose.connection.once("open", () => {
   console.log("MongoDB database connected successfully!");
 });
 
-app.use(`/${collectionTodosName}`, todoRoutes);
-app.use(`/${collectionUsersName}`, userRoutes);
+app.use("/profiles", todoRoutes);
+app.use("/users", userRoutes);
 app.use("/pictures", picturesRoutes);
 app.use("/channels", channelsRoutes);
 app.use("/participants", participantsRoutes);

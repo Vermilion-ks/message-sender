@@ -1,25 +1,25 @@
 {
-  "name": "backend",
+  "name": "todo-backend",
   "version": "1.0.0",
   "main": "database.service.js",
   "type": "commonjs",
   "license": "MIT",
-  "author": "daniel lambrecht",
+  "author": "vivek-upadhyay",
   "scripts": {
-    "start": "esno src/server.ts",
+    "start": "ts-node src/server.ts",
     "dev": "nodemon src/server.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "big-integer": "^1.6.52",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.16.4",
-    "telegram": "^2.23.10",
     "mongoose": "^5.4.8",
     "nodemon": "^2.0.22",
-    "ts-node": "^10.9.1",
-    "esno": "^4.7.0"
+    "telegram": "^2.23.10",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

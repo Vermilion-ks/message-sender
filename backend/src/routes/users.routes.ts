@@ -26,6 +26,7 @@ userRoutes.post("/login", async (req: Request, res: Response) => {
 // Регистрация пользователя
 userRoutes.post("/register", async (req: Request, res: Response) => {
   const { username, password } = req.body;
+  console.log("req.body:", req.body);
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) return res.status(400).send("User already exists");
@@ -40,9 +41,9 @@ userRoutes.post("/register", async (req: Request, res: Response) => {
     });
 
     await newUser.save();
-    res.status(201).send(newUser);
+    res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).send("Server error");
+    res.status(500).json("Server error");
   }
 });
 

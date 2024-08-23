@@ -6,7 +6,6 @@ import { StringSession } from "telegram/sessions";
 import { FloodWaitError } from "telegram/errors";
 import bigInt from "big-integer";
 import { promises as fs } from "fs";
-import * as path from "path";
 
 interface SessionInfo {
   session: string;
