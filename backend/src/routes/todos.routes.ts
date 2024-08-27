@@ -57,7 +57,11 @@ todoRoutes
       connectionRetries: 5,
     });
 
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error("Connection error:", error);
+    }
 
     try {
       const result = await client.invoke(
@@ -127,7 +131,11 @@ todoRoutes
       connectionRetries: 5,
     });
 
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error("Connection error:", error);
+    }
     const profile = await client.getMe();
     const userId = profile.id;
 
@@ -201,7 +209,11 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     });
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error("Connection error:", error);
+    }
     const entity = await client.getEntity(id);
 
     // Приведение типов и проверка наличия свойства `title`
@@ -247,7 +259,11 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     });
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error("Connection error:", error);
+    }
 
     // Получаем все диалоги для текущего пользователя
     const userDialogs = await client.getDialogs();
@@ -361,7 +377,11 @@ todoRoutes
       const client = new TelegramClient(stringSession, apiId, apiHash, {
         connectionRetries: 5,
       });
-      await client.connect();
+      try {
+        await client.connect();
+      } catch (error) {
+        console.error("Connection error:", error);
+      }
 
       const dialogs = await client.getDialogs();
       const sharedChats: any[] = [];
@@ -399,7 +419,11 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     });
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (error) {
+      console.error("Connection error:", error);
+    }
 
     let dialog = await DialogModel.findOne({ dialogId });
     if (!dialog) {
