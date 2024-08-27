@@ -8,11 +8,6 @@ import bigInt from "big-integer";
 import { promises as fs } from "fs";
 import path from "path";
 
-interface CommonChat {
-  id: string;
-  title: string;
-}
-
 interface SessionInfo {
   session: string;
   firstName: string;
@@ -60,13 +55,10 @@ todoRoutes
     const stringSession = new StringSession(sessionString);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
 
-    try {
-      await client.connect();
-    } catch (error) {
-      console.error("Connection error:", error);
-    }
+    await client.connect();
 
     try {
       const result = await client.invoke(
@@ -134,15 +126,12 @@ todoRoutes
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
 
-    try {
-      await client.connect();
-    } catch (error) {
-      console.error("Connection error:", error);
-    }
+    await client.connect();
     const profile = await client.getMe();
-    console.log("profile", profile);
+    const userId = profile.id;
 
     try {
       const dialogs = await client.getDialogs();
@@ -175,14 +164,14 @@ todoRoutes
         }
       }
 
-      // const filteredDialogs = channelDialogs.filter(
-      //   (dialog: any) =>
-      //     dialog.title !== "JIO Financial Services ЧАТ NICK" &&
-      //     dialog.title !== "JIO Financial Services | Channel"
-      // );
+      const filteredDialogs = channelDialogs.filter(
+        (dialog: any) =>
+          dialog.title !== "JIO Financial Services ЧАТ NICK" &&
+          dialog.title !== "JIO Financial Services | Channel"
+      );
 
       const simplifiedDialogs = await Promise.all(
-        channelDialogs.map(async (dialog: any) => ({
+        filteredDialogs.map(async (dialog: any) => ({
           id: dialog.id,
           title: dialog.title,
           isChannel: dialog.isChannel,
@@ -213,12 +202,9 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
-    try {
-      await client.connect();
-    } catch (error) {
-      console.error("Connection error:", error);
-    }
+    await client.connect();
     const entity = await client.getEntity(id);
 
     // Приведение типов и проверка наличия свойства `title`
@@ -254,76 +240,87 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   const { phone, dialogId, count, name } = req.body;
-  const user = await TodoModel.findOne({ phone });
 
+  const user = await TodoModel.findOne({ phone });
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  const stringSession = new StringSession(user.session);
-  const client = new TelegramClient(stringSession, apiId, apiHash, {
-    connectionRetries: 5,
-  });
-
   try {
+    const stringSession = new StringSession(user.session);
+    const client = new TelegramClient(stringSession, apiId, apiHash, {
+      connectionRetries: 5,
+      timeout: 60000,
+    });
     await client.connect();
 
-    // Получаем список диалогов пользователя
-    const userDialogs = await client.getDialogs();
-    const userChannelDialogs = userDialogs.filter(
-      (dialog: any) => dialog.isChannel
-    );
-
-    // Получаем список участников целевого диалога
-    let participants: any[] = [];
-    try {
-      const chat = await client.getEntity(dialogId);
-      participants = await client.getParticipants(chat);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        if (error.message.includes("CHAT_ADMIN_REQUIRED")) {
-          console.warn(
-            `Cannot get participants for chat ${dialogId}: ${error.message}`
-          );
-          return res
-            .status(403)
-            .json({
-              error: "Insufficient permissions to access chat participants",
-            });
-        } else {
-          console.error(
-            `Failed to get participants for chat ${dialogId}: ${error.message}`
-          );
-          return res
-            .status(500)
-            .json({ error: "Failed to get chat participants" });
-        }
-      } else {
-        console.error("An unknown error occurred:", error);
-        return res.status(500).json({ error: "An unknown error occurred" });
-      }
+    let dialog = await DialogModel.findOne({ dialogId });
+    if (!dialog) {
+      dialog = new DialogModel({
+        dialogId,
+        participants: [],
+      });
+      await dialog.save();
     }
 
-    // Фильтруем участников
-    const filteredParticipants = participants
-      .filter((p: any) => p.photo && p.username && p.photo.photoId)
-      .filter((p: any) =>
-        name ? p.firstName.toLowerCase().includes(name.toLowerCase()) : true
-      )
+    const chat = await client.getEntity(dialogId);
+    const participants = await client.getParticipants(chat);
+
+    // Отфильтровываем участников, которые не являются администраторами
+    const nonAdminParticipants = participants.filter(
+      (participant: any) =>
+        !(participant.participant && "adminRights" in participant.participant)
+    );
+
+    // Отфильтровываем участников, у которых есть фото профиля
+    const participantsWithPhoto = nonAdminParticipants.filter(
+      (participant: any) =>
+        participant.photo && participant.username && participant.photo.photoId
+    );
+
+    // Добавляем фильтрацию по имени, если name не пустое
+    const filteredParticipants = name
+      ? participantsWithPhoto.filter((participant: any) =>
+          participant.firstName.toLowerCase().includes(name.toLowerCase())
+        )
+      : participantsWithPhoto;
+
+    const participantsToSend = filteredParticipants.filter(
+      (participant: any) => !dialog?.participants.includes(participant.username)
+    );
+
+    const randomParticipants = participantsToSend
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
 
-    res.status(200).json(filteredParticipants);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Failed to find users:", error.message);
-      res.status(500).json({ error: "Failed to find users" });
-    } else {
-      console.error("An unknown error occurred:", error);
-      res.status(500).json({ error: "An unknown error occurred" });
+    for (const participant of randomParticipants) {
+      console.log(participant.username);
+      const entity = participant as any;
+
+      if (entity && entity.photo) {
+        const filePath = path.resolve(
+          __dirname,
+          "../images/participants/",
+          entity.username + ".png"
+        );
+        try {
+          const buffer = await client.downloadProfilePhoto(entity as any);
+          if (buffer instanceof Buffer) {
+            await saveFile(filePath, buffer);
+          } else {
+            console.error(
+              `Failed to download photo: returned value is not a Buffer`
+            );
+          }
+        } catch (err) {
+          console.error(`Failed to download or save photo: ${err}`);
+        }
+      }
     }
-  } finally {
-    await client.disconnect();
+    return res.status(200).json({ participants: randomParticipants });
+  } catch (error) {
+    console.error("Failed to send message:", error);
+    res.status(500).json({ error: "Failed to send message" });
   }
 });
 
@@ -342,12 +339,9 @@ todoRoutes
       const stringSession = new StringSession(user.session);
       const client = new TelegramClient(stringSession, apiId, apiHash, {
         connectionRetries: 5,
+        timeout: 60000,
       });
-      try {
-        await client.connect();
-      } catch (error) {
-        console.error("Connection error:", error);
-      }
+      await client.connect();
 
       const dialogs = await client.getDialogs();
       const sharedChats: any[] = [];
@@ -384,12 +378,9 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
-    try {
-      await client.connect();
-    } catch (error) {
-      console.error("Connection error:", error);
-    }
+    await client.connect();
 
     let dialog = await DialogModel.findOne({ dialogId });
     if (!dialog) {
@@ -433,6 +424,7 @@ todoRoutes
     const stringSession = new StringSession(sessions[phone].session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
 
     try {
