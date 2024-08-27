@@ -376,7 +376,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                 </span>
                                 <span className={s.dialogueParticipants}>
                                   @{participant.username}
-                                  общие диалоги:{" "}
+                                  Общих диалогов:
                                   {participant.commonChats.length}
                                 </span>
                               </div>
