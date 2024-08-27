@@ -177,7 +177,6 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
         setTodos={setTodos}
         onUserClick={() => {
           handleUserClick(profile.phone, profile._id);
-          handleFetchSharedChats(profile._id);
         }}
         isSelected={selectedProfileId === profile._id}
       />
@@ -355,9 +354,10 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                 ? s.expanded
                                 : ""
                             }`}
-                            onClick={() =>
-                              handleExpandParticipant(participant.id)
-                            }
+                            onClick={() => {
+                              handleExpandParticipant(participant.id);
+                              handleFetchSharedChats(participant.id);
+                            }}
                           >
                             <img
                               src={`${API_BASE_URL}/static/participants/${participant.username}.png`}
