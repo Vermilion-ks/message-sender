@@ -57,7 +57,7 @@ export interface Participant {
   usernames: string | null;
   verified: boolean;
 }
-const TODOS_API_BASE_URL = API_BASE_URL
+const TODOS_API_BASE_URL = API_BASE_URL;
 
 class TodosService {
   async getTodosByUserId(userId: string): Promise<AxiosResponse<Profile[]>> {
@@ -79,10 +79,13 @@ class TodosService {
     todo: Profile,
     objectId: string
   ): Promise<AxiosResponse<Profile>> {
-    return await axios.post(`${TODOS_API_BASE_URL}/profiles/update/${objectId}`, {
-      userId: todo.userId,
-      phone: todo.phone,
-    });
+    return await axios.post(
+      `${TODOS_API_BASE_URL}/profiles/update/${objectId}`,
+      {
+        userId: todo.userId,
+        phone: todo.phone,
+      }
+    );
   }
 
   async deleteTodoById(objectId: string): Promise<AxiosResponse<Profile>> {
@@ -108,7 +111,9 @@ class TodosService {
   }
 
   async activateSession(phone: string): Promise<AxiosResponse<any>> {
-    return await axios.post(`${TODOS_API_BASE_URL}/profiles/activate-session/${phone}`);
+    return await axios.post(
+      `${TODOS_API_BASE_URL}/profiles/activate-session/${phone}`
+    );
   }
 
   async getDialogueInfo(
@@ -125,11 +130,17 @@ class TodosService {
     return await axios.post(`${TODOS_API_BASE_URL}/profiles/dialogs/${phone}`);
   }
 
-  async findUsers(phone: string, dialogId: number, count: number) {
+  async findUsers(
+    phone: string,
+    dialogId: number,
+    count: number,
+    name?: string
+  ) {
     return axios.post(`${TODOS_API_BASE_URL}/profiles/find-users/`, {
       phone,
       dialogId,
       count,
+      name,
     });
   }
 

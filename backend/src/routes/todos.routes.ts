@@ -236,7 +236,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 });
 
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
-  const { phone, dialogId, count } = req.body;
+  const { phone, dialogId, count, name } = req.body;
   console.log("find-users:", req.body);
   const user = await TodoModel.findOne({ phone });
   if (!user) {

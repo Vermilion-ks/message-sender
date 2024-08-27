@@ -10,7 +10,9 @@ import participantsRoutes from "./routes/participants.routes";
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
 import path from "path";
-dotenv.config({ path: "../../.env" });
+
+dotenv.config({ path: path.join(__dirname, "../../.env") });
+//dotenv.config({ path: "../../.env" });
 
 //dotenv.config();
 

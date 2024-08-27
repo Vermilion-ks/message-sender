@@ -17,12 +17,20 @@
   background-color: #2b2d31; /* Светлый фон */
 
   max-width: 520px;
-  max-height: 100px;
+  max-height: 120px;
   margin-left: 25px; /* Убираем горизонтальные отступы, чтобы форма была в левой части */
   align-items: flex-start; /* Выравнивание элементов по левому краю */
   opacity: 0; /* Начальная невидимость */
   transform: translateY(20px); /* Начальная позиция для анимации */
   animation: fadeIn 0.5s forwards; /* Запуск анимации */
+
+  .countForm {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #ffffff;
+    display: flex;
+    flex-direction: row;
+  }
 }
 
 .countText {
@@ -31,7 +39,17 @@
   color: #ffffff;
 }
 .messageCount {
-  width: 100px;
+  margin-left: 10px;
+  width: 50px;
+  background-color: #2b2d31;
+  color: #fff;
+  border: 1px solid #666;
+  margin-bottom: 10px;
+}
+
+.messageName {
+  margin-left: 10px;
+  width: 200px;
   background-color: #2b2d31;
   color: #fff;
   border: 1px solid #666;

@@ -182,11 +182,11 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const handleFindUsers = (
     phone: string,
     dialogId: number,
-    //message: string,
+    name: string,
     count: number
   ): Promise<void> => {
     return todoService
-      .findUsers(phone, dialogId, count)
+      .findUsers(phone, dialogId, count, name)
       .then((res) => {
         const { participants } = res.data;
         setParticipants(participants);

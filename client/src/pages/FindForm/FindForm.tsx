@@ -8,22 +8,22 @@ const FindForm: FC<{
   onSend: (
     phone: string,
     dialogId: number,
-    //message: string,
+    name: string, // Добавлено имя пользователя
     count: number
   ) => Promise<void>;
   onClose: () => void;
 }> = ({ dialogId, phone, onSend, onClose }) => {
-  const [message, setMessage] = useState<string>("");
+  const [sortedName, setSortedName] = useState<string>(""); // Переименовано для ясности
   const [isSending, setIsSending] = useState<boolean>(false);
   const [count, setCount] = useState<number>(1);
 
   const handleSend = () => {
     setIsSending(true);
-    onSend(phone, dialogId, count)
+    onSend(phone, dialogId, sortedName, count) // Передаём имя пользователя в onSend
       .then(() => {
-        //setMessage("");
         setIsSending(false);
         setCount(1);
+        setSortedName(""); // Очищаем поле ввода имени после отправки
       })
       .catch(() => {
         setIsSending(false);
@@ -32,30 +32,30 @@ const FindForm: FC<{
 
   return (
     <div className={s.messageForm}>
-      <input
-        type="number"
-        value={count}
-        onChange={(e) => setCount(Number(e.target.value))}
-        min="1"
-        className={s.messageCount}
-      />
-      {/* <textarea
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Введите сообщение..."
-        disabled={isSending} // Отключаем поле ввода при отправке
-      /> */}
+      <div className={s.countForm}>
+        <span className={s.countText}>
+          Количество пользователей для поиска:
+        </span>
+        <input
+          type="number"
+          value={count}
+          onChange={(e) => setCount(Number(e.target.value))}
+          min="1"
+          className={s.messageCount}
+        />
+      </div>
+      <div className={s.countForm}>
+        <span className={s.countText}>Фильтр по имени (может быть пустым)</span>
+        <input
+          type="text"
+          value={sortedName}
+          onChange={(e) => setSortedName(e.target.value)}
+          placeholder="Имя пользователя"
+          className={s.messageName}
+        />
+      </div>
       <div className={s.buttonContainer}>
-        {isSending ? (
-          <Spinner /> // Показываем спиннер вместо кнопки
-        ) : (
-          <button
-            onClick={handleSend}
-            //disabled={message.trim().length === 0} // Отключаем кнопку, если поле пустое
-          >
-            Поиск
-          </button>
-        )}
+        {isSending ? <Spinner /> : <button onClick={handleSend}>Поиск</button>}
       </div>
     </div>
   );
