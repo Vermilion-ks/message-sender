@@ -16,7 +16,6 @@ import { API_BASE_URL } from "../../services/consts";
 export interface CommonChat {
   id: string;
   title: string;
-  type: string;
 }
 export interface Participant {
   accessHash: string;

@@ -313,25 +313,31 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     for (const participant of randomParticipants) {
       const entity = participant as any;
 
-      // Получаем все диалоги для текущего участника
-      const participantDialogs = await client.getDialogs();
-      const participantChannelDialogs = participantDialogs.filter(
-        (dialog: any) => dialog.isChannel
-      );
+      // Инициализация массива общих чатов
+      entity.commonChats = [];
 
-      // Находим общие чаты между вашим списком диалогов и диалогами участника
-      const commonChats = userChannelDialogs.filter((userDialog: any) =>
-        participantChannelDialogs.some((participantDialog: any) =>
-          userDialog.id.equals(participantDialog.id)
-        )
-      );
+      // Для каждого диалога пользователя проверяем наличие текущего участника
+      for (const userDialog of userChannelDialogs) {
+        if (userDialog.id) {
+          // Проверяем, что id определен
+          const chat = await client.getEntity(userDialog.id);
 
-      // Добавляем общие чаты к данным участника
-      entity.commonChats = commonChats.map((chat: any) => ({
-        id: chat.id,
-        title: chat.title,
-        type: chat.type,
-      }));
+          const chatParticipants = await client.getParticipants(chat);
+
+          const isParticipantInChat = chatParticipants.some(
+            (p: any) => p.username === entity.username
+          );
+
+          if (isParticipantInChat) {
+            entity.commonChats.push({
+              id: userDialog.id,
+              title: userDialog.title,
+            });
+          }
+        } else {
+          console.error(`Dialog ID is undefined for dialog:`, userDialog);
+        }
+      }
 
       if (entity && entity.photo) {
         const filePath = path.resolve(
