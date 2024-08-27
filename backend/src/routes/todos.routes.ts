@@ -267,31 +267,28 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
-    const maxPhotoId = BigInt("2000000000000000000");
 
     // Отфильтровываем участников, у которых есть фото профиля
     const participantsWithPhoto = nonAdminParticipants.filter(
       (participant: any) =>
         participant.photo && participant.username && participant.photo.photoId
     );
-    // BigInt(participant.photo.photoId.value) <= maxPhotoId
-    // const participantsLastOnline = participantsWithPhoto.filter(
-    //   (participant: any) => participant.status
-    // );
-    //Отфильтровываем участников, которым уже было отправлено сообщение
-    const participantsToSend = participantsWithPhoto.filter(
-      (participant: any) => !dialog?.participants.includes(participant.username) // Используем опциональную цепочку
-    );
 
-    // if (participantsToSend.length < count) {
-    //   return res.status(400).json({
-    //     error: "Not enough non-admin participants with photos in the group",
-    //   });
-    // }
+    // Добавляем фильтрацию по имени, если name не пустое
+    const filteredParticipants = name
+      ? participantsWithPhoto.filter((participant: any) =>
+          participant.firstName.toLowerCase().includes(name.toLowerCase())
+        )
+      : participantsWithPhoto;
+
+    const participantsToSend = filteredParticipants.filter(
+      (participant: any) => !dialog?.participants.includes(participant.username)
+    );
 
     const randomParticipants = participantsToSend
       .sort(() => 0.5 - Math.random()) // Перемешивание массива случайным образом
       .slice(0, count); // Выбор нужного количества участников
+
     for (const participant of randomParticipants) {
       console.log(participant.username);
       const entity = participant as any; // Приводим к типу any для простоты
