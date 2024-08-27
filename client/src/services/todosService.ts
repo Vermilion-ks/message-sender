@@ -130,6 +130,12 @@ class TodosService {
     return await axios.post(`${TODOS_API_BASE_URL}/profiles/dialogs/${phone}`);
   }
 
+  async getSharedChats(profile: string) {
+    return axios.post(`${TODOS_API_BASE_URL}/profiles/find-sharedChats/`, {
+      profile,
+    });
+  }
+
   async findUsers(
     phone: string,
     dialogId: number,

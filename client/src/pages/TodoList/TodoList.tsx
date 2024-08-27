@@ -90,6 +90,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [showParticipants, setShowParticipants] = useState<boolean>(false);
   const [expandedParticipant, setExpandedParticipant] = useState(null);
+  const [sharedChats, setSharedChats] = useState<any[]>([]);
 
   useEffect(() => {
     setLoadingTodos(true);
@@ -174,7 +175,10 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
         profile={profile}
         userId={user._id}
         setTodos={setTodos}
-        onUserClick={() => handleUserClick(profile.phone, profile._id)}
+        onUserClick={() => {
+          handleUserClick(profile.phone, profile._id);
+          handleFetchSharedChats(profile._id);
+        }}
         isSelected={selectedProfileId === profile._id}
       />
     ));
@@ -232,20 +236,19 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     );
   };
 
-  const handleExpandParticipant = (id) => {
+  const handleExpandParticipant = (id: string) => {
     setExpandedParticipant(expandedParticipant === id ? null : id);
+  };
+
+  const handleFetchSharedChats = (profileId: string) => {
+    todoService
+      .getSharedChats(profileId) // Здесь используется ваш метод для получения общих чатов
+      .then((res) => setSharedChats(res.data))
+      .catch(() => toast.error("Не удалось получить общие чаты"));
   };
 
   return (
     <div className={s.container}>
-      {/* <div className={s.navigation}>
-        <NavigationBar
-          user={user}
-          setLoginUser={setLoginUser}
-          setShowForm={setShowAddingTodo} // Передайте метод для отображения формы добавления
-        />
-      </div> */}
-
       {showAddingTodo ? (
         <AddingTodo
           userId={user._id} // Передайте userId в AddingTodo
@@ -400,6 +403,19 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                       onClose={() => setShowFindForm(false)}
                     />
                   </>
+                )}
+              </div>
+              <div>
+                {sharedChats.length > 0 && (
+                  <div className={s.sharedChatsWrapper}>
+                    <h3>Общие чаты</h3>
+                    {sharedChats.map((chat) => (
+                      <div key={chat.id} className={s.sharedChat}>
+                        <span>{chat.title}</span>
+                        <span>{chat.participants} участников</span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

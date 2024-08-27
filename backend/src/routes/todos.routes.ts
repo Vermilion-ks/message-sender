@@ -286,12 +286,12 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     );
 
     const randomParticipants = participantsToSend
-      .sort(() => 0.5 - Math.random()) // Перемешивание массива случайным образом
-      .slice(0, count); // Выбор нужного количества участников
+      .sort(() => 0.5 - Math.random())
+      .slice(0, count);
 
     for (const participant of randomParticipants) {
       console.log(participant.username);
-      const entity = participant as any; // Приводим к типу any для простоты
+      const entity = participant as any;
 
       if (entity && entity.photo) {
         const filePath = path.resolve(
@@ -319,6 +319,47 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to send message" });
   }
 });
+
+todoRoutes
+  .route("/find-sharedChats")
+  .post(async (req: Request, res: Response) => {
+    const { profile } = req.body;
+    console.log("profile:", profile);
+
+    try {
+      const user = await TodoModel.findOne({ profile });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const stringSession = new StringSession(user.session);
+      const client = new TelegramClient(stringSession, apiId, apiHash, {
+        connectionRetries: 5,
+      });
+      await client.connect();
+
+      const dialogs = await client.getDialogs();
+      const sharedChats: any[] = [];
+
+      for (const dialog of dialogs) {
+        const dialogId = dialog.id;
+        if (!dialogId) continue; // Пропускаем, если dialogId undefined
+
+        try {
+          const entity = await client.getEntity(dialogId);
+          // Здесь ты можешь добавить логику проверки, является ли этот чат общим для профиля
+          sharedChats.push(entity);
+        } catch (err) {
+          console.error(`Failed to get entity for dialogId ${dialogId}:`, err);
+        }
+      }
+
+      return res.status(200).json({ sharedChats });
+    } catch (error) {
+      console.error("Failed to retrieve shared chats:", error);
+      res.status(500).json({ error: "Failed to retrieve shared chats" });
+    }
+  });
 
 todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
   const { phone, dialogId, message, participans, sleepTime } = req.body;
@@ -349,15 +390,8 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     }
 
     for (const participant of participans) {
-      // console.log(participant.username);
-      // console.log(participant.id);
-      // console.log(sleepTime);
-      // Отправка сообщения
       await client.sendMessage(participant.username, { message });
-      //await client.sendMessage("vermilion_ks", { message });
-      // Добавляем участника в список участников, которым было отправлено сообщение
       dialog.participants.push(participant.username);
-      // Задержка в 1 секунду
       await sleep(sleepTime * 1000);
     }
 
