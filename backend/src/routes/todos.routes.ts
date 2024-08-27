@@ -8,6 +8,11 @@ import bigInt from "big-integer";
 import { promises as fs } from "fs";
 import path from "path";
 
+interface CommonChat {
+  id: string;
+  title: string;
+}
+
 interface SessionInfo {
   session: string;
   firstName: string;
@@ -250,152 +255,86 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   const { phone, dialogId, count, name } = req.body;
   const user = await TodoModel.findOne({ phone });
+
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  try {
-    const stringSession = new StringSession(user.session);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      connectionRetries: 5,
-    });
-    try {
-      await client.connect();
-    } catch (error) {
-      console.error("Connection error:", error);
-    }
+  const stringSession = new StringSession(user.session);
+  const client = new TelegramClient(stringSession, apiId, apiHash, {
+    connectionRetries: 5,
+  });
 
-    // Получаем все диалоги для текущего пользователя
+  try {
+    await client.connect();
+
+    // Получаем список диалогов пользователя
     const userDialogs = await client.getDialogs();
     const userChannelDialogs = userDialogs.filter(
       (dialog: any) => dialog.isChannel
     );
 
-    // Получение текущего диалога и его участников
-    let dialog = await DialogModel.findOne({ dialogId });
-    if (!dialog) {
-      dialog = new DialogModel({
-        dialogId,
-        participants: [],
-      });
-      await dialog.save();
-    }
-
+    // Получаем список участников целевого диалога
     const chat = await client.getEntity(dialogId);
     const participants = await client.getParticipants(chat);
 
-    // Фильтрация участников
-    const nonAdminParticipants = participants.filter(
-      (participant: any) =>
-        !(participant.participant && "adminRights" in participant.participant)
-    );
-
-    const participantsWithPhoto = nonAdminParticipants.filter(
-      (participant: any) =>
-        participant.photo && participant.username && participant.photo.photoId
-    );
-
-    const filteredParticipants = name
-      ? participantsWithPhoto.filter((participant: any) =>
-          participant.firstName.toLowerCase().includes(name.toLowerCase())
-        )
-      : participantsWithPhoto;
-
-    const participantsToSend = filteredParticipants.filter(
-      (participant: any) => !dialog?.participants.includes(participant.username)
-    );
-
-    const randomParticipants = participantsToSend
+    // Фильтруем участников
+    const filteredParticipants = participants
+      .filter((p: any) => p.photo && p.username && p.photo.photoId)
+      .filter((p: any) =>
+        name ? p.firstName.toLowerCase().includes(name.toLowerCase()) : true
+      )
+      .filter(
+        (p: any) =>
+          !userChannelDialogs.some((userDialog: any) =>
+            userDialog.participants.includes(p.username)
+          )
+      )
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
 
-    // Получение общих чатов для каждого участника
-    for (const participant of randomParticipants) {
-      const entity = participant as any;
+    // Получаем общие чаты для каждого участника
+    const modifiedParticipants = await Promise.all(
+      filteredParticipants.map(async (participant) => {
+        const modifiedParticipant = {
+          ...participant,
+          commonChats: [] as CommonChat[],
+        };
 
-      // Инициализация массива общих чатов
-      entity.commonChats = [];
-
-      // Для каждого диалога пользователя проверяем наличие текущего участника
-      for (const userDialog of userChannelDialogs) {
-        if (userDialog.id) {
-          try {
-            // Проверяем, что id определен
-            const chat = await client.getEntity(userDialog.id);
-
-            // Пытаемся получить участников чата
-            try {
-              const chatParticipants = await client.getParticipants(chat);
-
-              const isParticipantInChat = chatParticipants.some(
-                (p: any) => p.username === entity.username
-              );
-
-              if (isParticipantInChat) {
-                entity.commonChats.push({
-                  id: userDialog.id,
-                  title: userDialog.title,
-                });
-              }
-            } catch (error) {
-              // Приведение типа ошибки к нужному типу
-              if (
-                error instanceof Error &&
-                "code" in error &&
-                "errorMessage" in error
-              ) {
-                const telegramError = error as any;
-
-                if (
-                  telegramError.code === 400 &&
-                  telegramError.errorMessage === "CHAT_ADMIN_REQUIRED"
-                ) {
-                  console.warn(
-                    `Skipping chat ${userDialog.title} due to closed participants list.`
-                  );
-                  continue; // Пропускаем этот чат и переходим к следующему
-                } else {
-                  throw error; // Если ошибка другая, просто бросаем её дальше
-                }
-              } else {
-                throw error; // Если ошибка не того типа, бросаем её дальше
-              }
+        await Promise.all(
+          userChannelDialogs.map(async (userDialog) => {
+            if (await isUserInDialog(client, userDialog, participant)) {
+              modifiedParticipant.commonChats.push({
+                id: String(userDialog.id),
+                title: userDialog.title || "", // Используем пустую строку, если title undefined
+              });
             }
-          } catch (error) {
-            console.error(`Failed to process chat ${userDialog.title}:`, error);
-          }
-        } else {
-          console.error(`Dialog ID is undefined for dialog:`, userDialog);
-        }
-      }
-
-      if (entity && entity.photo) {
-        const filePath = path.resolve(
-          __dirname,
-          "../images/participants/",
-          entity.username + ".png"
+          })
         );
-        try {
-          const buffer = await client.downloadProfilePhoto(entity as any);
-          if (buffer instanceof Buffer) {
-            await saveFile(filePath, buffer);
-          } else {
-            console.error(
-              `Failed to download photo: returned value is not a Buffer`
-            );
-          }
-        } catch (err) {
-          console.error(`Failed to download or save photo: ${err}`);
-        }
-      }
-    }
 
-    return res.status(200).json({ participants: randomParticipants });
+        return modifiedParticipant;
+      })
+    );
+
+    res.status(200).json(modifiedParticipants);
   } catch (error) {
-    console.error("Failed to send message:", error);
-    res.status(500).json({ error: "Failed to send message" });
+    console.error("Failed to find users:", error);
+    res.status(500).json({ error: "Failed to find users" });
+  } finally {
+    await client.disconnect();
   }
 });
+
+// Функция для проверки, состоит ли пользователь в диалоге
+async function isUserInDialog(
+  client: TelegramClient,
+  dialog: any,
+  participant: any
+): Promise<boolean> {
+  const chat = await client.getEntity(dialog.id);
+  const participants = await client.getParticipants(chat);
+  return participants.some((p: any) => p.username === participant.username);
+}
 
 todoRoutes
   .route("/find-sharedChats")
