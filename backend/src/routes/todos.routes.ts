@@ -319,20 +319,50 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       // Для каждого диалога пользователя проверяем наличие текущего участника
       for (const userDialog of userChannelDialogs) {
         if (userDialog.id) {
-          // Проверяем, что id определен
-          const chat = await client.getEntity(userDialog.id);
+          try {
+            // Проверяем, что id определен
+            const chat = await client.getEntity(userDialog.id);
 
-          const chatParticipants = await client.getParticipants(chat);
+            // Пытаемся получить участников чата
+            try {
+              const chatParticipants = await client.getParticipants(chat);
 
-          const isParticipantInChat = chatParticipants.some(
-            (p: any) => p.username === entity.username
-          );
+              const isParticipantInChat = chatParticipants.some(
+                (p: any) => p.username === entity.username
+              );
 
-          if (isParticipantInChat) {
-            entity.commonChats.push({
-              id: userDialog.id,
-              title: userDialog.title,
-            });
+              if (isParticipantInChat) {
+                entity.commonChats.push({
+                  id: userDialog.id,
+                  title: userDialog.title,
+                });
+              }
+            } catch (error) {
+              // Приведение типа ошибки к нужному типу
+              if (
+                error instanceof Error &&
+                "code" in error &&
+                "errorMessage" in error
+              ) {
+                const telegramError = error as any;
+
+                if (
+                  telegramError.code === 400 &&
+                  telegramError.errorMessage === "CHAT_ADMIN_REQUIRED"
+                ) {
+                  console.warn(
+                    `Skipping chat ${userDialog.title} due to closed participants list.`
+                  );
+                  continue; // Пропускаем этот чат и переходим к следующему
+                } else {
+                  throw error; // Если ошибка другая, просто бросаем её дальше
+                }
+              } else {
+                throw error; // Если ошибка не того типа, бросаем её дальше
+              }
+            }
+          } catch (error) {
+            console.error(`Failed to process chat ${userDialog.title}:`, error);
           }
         } else {
           console.error(`Dialog ID is undefined for dialog:`, userDialog);
