@@ -137,7 +137,7 @@ todoRoutes
       console.error("Connection error:", error);
     }
     const profile = await client.getMe();
-    const userId = profile.id;
+    console.log("profile", profile);
 
     try {
       const dialogs = await client.getDialogs();
