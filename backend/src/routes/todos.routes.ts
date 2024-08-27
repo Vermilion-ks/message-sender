@@ -55,6 +55,7 @@ todoRoutes
     const stringSession = new StringSession(sessionString);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
 
     await client.connect();
@@ -125,6 +126,7 @@ todoRoutes
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
 
     await client.connect();
@@ -200,6 +202,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
     await client.connect();
     const entity = await client.getEntity(id);
@@ -247,6 +250,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
     await client.connect();
 
@@ -335,6 +339,7 @@ todoRoutes
       const stringSession = new StringSession(user.session);
       const client = new TelegramClient(stringSession, apiId, apiHash, {
         connectionRetries: 5,
+        timeout: 60000,
       });
       await client.connect();
 
@@ -373,6 +378,7 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
     await client.connect();
 
@@ -418,6 +424,7 @@ todoRoutes
     const stringSession = new StringSession(sessions[phone].session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
+      timeout: 60000,
     });
 
     try {
