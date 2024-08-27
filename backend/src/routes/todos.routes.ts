@@ -164,14 +164,14 @@ todoRoutes
         }
       }
 
-      const filteredDialogs = channelDialogs.filter(
-        (dialog: any) =>
-          dialog.title !== "JIO Financial Services ЧАТ NICK" &&
-          dialog.title !== "JIO Financial Services | Channel"
-      );
+      // const filteredDialogs = channelDialogs.filter(
+      //   (dialog: any) =>
+      //     dialog.title !== "JIO Financial Services ЧАТ NICK" &&
+      //     dialog.title !== "JIO Financial Services | Channel"
+      // );
 
       const simplifiedDialogs = await Promise.all(
-        filteredDialogs.map(async (dialog: any) => ({
+        channelDialogs.map(async (dialog: any) => ({
           id: dialog.id,
           title: dialog.title,
           isChannel: dialog.isChannel,
@@ -240,7 +240,6 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   const { phone, dialogId, count, name } = req.body;
-  console.log("find-users:", req.body);
   const user = await TodoModel.findOne({ phone });
   if (!user) {
     return res.status(404).json({ error: "User not found" });
@@ -254,6 +253,13 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     });
     await client.connect();
 
+    // Получаем все диалоги для текущего пользователя
+    const userDialogs = await client.getDialogs();
+    const userChannelDialogs = userDialogs.filter(
+      (dialog: any) => dialog.isChannel
+    );
+
+    // Получение текущего диалога и его участников
     let dialog = await DialogModel.findOne({ dialogId });
     if (!dialog) {
       dialog = new DialogModel({
@@ -266,19 +272,17 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     const chat = await client.getEntity(dialogId);
     const participants = await client.getParticipants(chat);
 
-    // Отфильтровываем участников, которые не являются администраторами
+    // Фильтрация участников
     const nonAdminParticipants = participants.filter(
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
 
-    // Отфильтровываем участников, у которых есть фото профиля
     const participantsWithPhoto = nonAdminParticipants.filter(
       (participant: any) =>
         participant.photo && participant.username && participant.photo.photoId
     );
 
-    // Добавляем фильтрацию по имени, если name не пустое
     const filteredParticipants = name
       ? participantsWithPhoto.filter((participant: any) =>
           participant.firstName.toLowerCase().includes(name.toLowerCase())
@@ -293,9 +297,29 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
 
+    // Получение общих чатов для каждого участника
     for (const participant of randomParticipants) {
-      console.log(participant.username);
       const entity = participant as any;
+
+      // Получаем все диалоги для текущего участника
+      const participantDialogs = await client.getDialogs();
+      const participantChannelDialogs = participantDialogs.filter(
+        (dialog: any) => dialog.isChannel
+      );
+
+      // Находим общие чаты между вашим списком диалогов и диалогами участника
+      const commonChats = userChannelDialogs.filter((userDialog: any) =>
+        participantChannelDialogs.some((participantDialog: any) =>
+          userDialog.id.equals(participantDialog.id)
+        )
+      );
+
+      // Добавляем общие чаты к данным участника
+      entity.commonChats = commonChats.map((chat: any) => ({
+        id: chat.id,
+        title: chat.title,
+        type: chat.type,
+      }));
 
       if (entity && entity.photo) {
         const filePath = path.resolve(
@@ -317,6 +341,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         }
       }
     }
+
     return res.status(200).json({ participants: randomParticipants });
   } catch (error) {
     console.error("Failed to send message:", error);

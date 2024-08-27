@@ -69,6 +69,7 @@ export interface Participant {
   username: string;
   usernames: string | null;
   verified: boolean;
+  commonChats: [];
 }
 
 const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
@@ -239,12 +240,12 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     setExpandedParticipant(expandedParticipant === id ? null : id);
   };
 
-  const handleFetchSharedChats = (profileId: string) => {
-    todoService
-      .getSharedChats(profileId) // Здесь используется ваш метод для получения общих чатов
-      .then((res) => setSharedChats(res.data))
-      .catch(() => toast.error("Не удалось получить общие чаты"));
-  };
+  // const handleFetchSharedChats = (profileId: string) => {
+  //   todoService
+  //     .getSharedChats(profileId) // Здесь используется ваш метод для получения общих чатов
+  //     .then((res) => setSharedChats(res.data))
+  //     .catch(() => toast.error("Не удалось получить общие чаты"));
+  // };
 
   return (
     <div className={s.container}>
@@ -356,7 +357,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                             }`}
                             onClick={() => {
                               handleExpandParticipant(participant.id);
-                              handleFetchSharedChats(participant.id);
+                              //handleFetchSharedChats(participant.id);
                             }}
                           >
                             <img
@@ -375,6 +376,8 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                 </span>
                                 <span className={s.dialogueParticipants}>
                                   @{participant.username}
+                                  общие диалоги:{" "}
+                                  {participant.commonChats.length}
                                 </span>
                               </div>
                             )}
