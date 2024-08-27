@@ -286,9 +286,14 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       )
       .filter(
         (p: any) =>
-          !userChannelDialogs.some((userDialog: any) =>
-            userDialog.participants.includes(p.username)
-          )
+          !userChannelDialogs.some((userDialog: any) => {
+            // Проверяем, существует ли participants и является ли массивом
+            const participants = userDialog.participants;
+            if (!Array.isArray(participants)) {
+              return false;
+            }
+            return participants.includes(p.username);
+          })
       )
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
