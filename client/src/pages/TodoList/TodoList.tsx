@@ -13,10 +13,7 @@ import { Profile } from "../../models/Profile";
 import AddingTodo from "../AddingTodo/AddingTodo"; // Импортируйте AddingTodo
 import { PersonPlusFill } from "react-bootstrap-icons";
 import { API_BASE_URL } from "../../services/consts";
-export interface CommonChat {
-  id: string;
-  title: string;
-}
+
 export interface Participant {
   accessHash: string;
   applyMinPhoto: boolean;
@@ -72,7 +69,6 @@ export interface Participant {
   username: string;
   usernames: string | null;
   verified: boolean;
-  commonChats: CommonChat[];
 }
 
 const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
@@ -378,14 +374,6 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                 </span>
                                 <span className={s.dialogueParticipants}>
                                   @{participant.username}
-                                  Общих диалогов:
-                                  {participant.commonChats &&
-                                    participant.commonChats.length > 0 && (
-                                      <>
-                                        Общих чатов:
-                                        {participant.commonChats.length}
-                                      </>
-                                    )}
                                 </span>
                               </div>
                             )}

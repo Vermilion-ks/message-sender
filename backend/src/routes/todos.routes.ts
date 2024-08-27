@@ -310,44 +310,10 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       .filter((p: any) =>
         name ? p.firstName.toLowerCase().includes(name.toLowerCase()) : true
       )
-      .filter(
-        (p: any) =>
-          !userChannelDialogs.some((userDialog: any) => {
-            // Проверяем, существует ли participants и является ли массивом
-            const participants = userDialog.participants;
-            if (!Array.isArray(participants)) {
-              return false;
-            }
-            return participants.includes(p.username);
-          })
-      )
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
 
-    // Получаем общие чаты для каждого участника
-    const modifiedParticipants = await Promise.all(
-      filteredParticipants.map(async (participant) => {
-        const modifiedParticipant = {
-          ...participant,
-          commonChats: [] as CommonChat[],
-        };
-
-        await Promise.all(
-          userChannelDialogs.map(async (userDialog) => {
-            if (await isUserInDialog(client, userDialog, participant)) {
-              modifiedParticipant.commonChats.push({
-                id: String(userDialog.id),
-                title: userDialog.title || "", // Используем пустую строку, если title undefined
-              });
-            }
-          })
-        );
-
-        return modifiedParticipant;
-      })
-    );
-
-    res.status(200).json(modifiedParticipants);
+    res.status(200).json(filteredParticipants);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Failed to find users:", error.message);
@@ -360,30 +326,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     await client.disconnect();
   }
 });
-
-// Функция для проверки, состоит ли пользователь в диалоге
-async function isUserInDialog(
-  client: TelegramClient,
-  dialog: any,
-  participant: any
-): Promise<boolean> {
-  try {
-    const chat = await client.getEntity(dialog.id);
-    const participants = await client.getParticipants(chat);
-    return participants.some((p: any) => p.username === participant.username);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.warn(
-        `Failed to check if user is in dialog ${dialog.id}: ${error.message}`
-      );
-    } else {
-      console.warn(
-        `Failed to check if user is in dialog ${dialog.id}: An unknown error occurred`
-      );
-    }
-    return false;
-  }
-}
 
 todoRoutes
   .route("/find-sharedChats")
