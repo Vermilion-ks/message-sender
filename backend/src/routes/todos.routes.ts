@@ -275,8 +275,34 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     );
 
     // Получаем список участников целевого диалога
-    const chat = await client.getEntity(dialogId);
-    const participants = await client.getParticipants(chat);
+    let participants: any[] = [];
+    try {
+      const chat = await client.getEntity(dialogId);
+      participants = await client.getParticipants(chat);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (error.message.includes("CHAT_ADMIN_REQUIRED")) {
+          console.warn(
+            `Cannot get participants for chat ${dialogId}: ${error.message}`
+          );
+          return res
+            .status(403)
+            .json({
+              error: "Insufficient permissions to access chat participants",
+            });
+        } else {
+          console.error(
+            `Failed to get participants for chat ${dialogId}: ${error.message}`
+          );
+          return res
+            .status(500)
+            .json({ error: "Failed to get chat participants" });
+        }
+      } else {
+        console.error("An unknown error occurred:", error);
+        return res.status(500).json({ error: "An unknown error occurred" });
+      }
+    }
 
     // Фильтруем участников
     const filteredParticipants = participants
@@ -322,9 +348,14 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     );
 
     res.status(200).json(modifiedParticipants);
-  } catch (error) {
-    console.error("Failed to find users:", error);
-    res.status(500).json({ error: "Failed to find users" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Failed to find users:", error.message);
+      res.status(500).json({ error: "Failed to find users" });
+    } else {
+      console.error("An unknown error occurred:", error);
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   } finally {
     await client.disconnect();
   }
@@ -336,9 +367,22 @@ async function isUserInDialog(
   dialog: any,
   participant: any
 ): Promise<boolean> {
-  const chat = await client.getEntity(dialog.id);
-  const participants = await client.getParticipants(chat);
-  return participants.some((p: any) => p.username === participant.username);
+  try {
+    const chat = await client.getEntity(dialog.id);
+    const participants = await client.getParticipants(chat);
+    return participants.some((p: any) => p.username === participant.username);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.warn(
+        `Failed to check if user is in dialog ${dialog.id}: ${error.message}`
+      );
+    } else {
+      console.warn(
+        `Failed to check if user is in dialog ${dialog.id}: An unknown error occurred`
+      );
+    }
+    return false;
+  }
 }
 
 todoRoutes
