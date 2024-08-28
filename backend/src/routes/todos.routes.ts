@@ -332,23 +332,17 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 
         try {
           // Получаем общие группы с пользователем
-          const commonGroups = await client.invoke(
+          const commonGroups: any = await client.invoke(
             new Api.messages.GetCommonChats({
               userId: entity.id,
               limit: 100, // Устанавливаем лимит на количество возвращаемых групп
             })
           );
 
+          // Добавляем в массив commonChats
           commonChats.push({
-            userId: String(entity.id), // Преобразуем ID пользователя в строку
-            chats: commonGroups.chats.map((c) => {
-              // Создаем новый объект с преобразованным ID и затем добавляем оставшиеся свойства из c
-              const { id, ...rest } = c; // Деструктуризация объекта c
-              return {
-                id: String(id), // Преобразуем ID чата в строку
-                ...rest, // Оставшиеся свойства объекта c
-              };
-            }),
+            userId: String(entity.id),
+            chats: commonGroups.chats,
           });
 
           // Загружаем фото профиля
