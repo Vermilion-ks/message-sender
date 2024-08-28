@@ -311,7 +311,8 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           participant.firstName.toLowerCase().includes(name.toLowerCase())
         )
       : participantsWithPhoto;
-
+    console.log("participantsToSend:", filteredParticipants);
+    console.log("dialog.participants:", dialog.participants);
     const participantsToSend = filteredParticipants.filter(
       (participant: any) =>
         !dialog.participants.some((p: any) => p.sender === mainLogin)
