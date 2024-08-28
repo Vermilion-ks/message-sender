@@ -358,7 +358,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         }
       }
     }
-
+    console.log(commonChats);
     return res
       .status(200)
       .json({ participants: randomParticipants, commonChats: commonChats });
