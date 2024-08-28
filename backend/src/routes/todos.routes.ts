@@ -315,7 +315,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       (participant: any) => {
         // Находим участника в dialog.participants с совпадающим username
         const matchingParticipant = dialog.participants.find(
-          (p: any) => p.userID === participant.username
+          (p: any) => p.userId === participant.username
         );
 
         // Если найденный участник существует и его sender совпадает с mainLogin, исключаем его
@@ -427,7 +427,7 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     }
 
     for (const participant of participans) {
-      //await client.sendMessage(participant.username, { message });
+      await client.sendMessage(participant.username, { message });
       dialog.participants.push({
         userId: participant.username,
         sender: username,
