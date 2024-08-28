@@ -292,6 +292,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
         setParticipants(participants);
         setCommonChats(commonChats);
         setShowParticipants(true);
+        console.log(commonChats);
       })
       .catch((err) => {
         console.error(err);
@@ -346,7 +347,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     return (
       <ul>
         {userChats.chats.map((chat) => (
-          <li key={chat.id.value.toString()}>{chat.title}</li>
+          <div>{chat.title}</div>
         ))}
       </ul>
     );
