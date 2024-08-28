@@ -477,11 +477,6 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                               //handleFetchSharedChats(participant.id);
                             }}
                           >
-                            {expandedParticipant === participant.id && (
-                              <div className={s.commonChats}>
-                                {renderCommonChats(participant.id)}
-                              </div>
-                            )}
                             <img
                               src={`${API_BASE_URL}/static/participants/${participant.username}.png`}
                               alt="Profile"
@@ -530,6 +525,14 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
               </div>
             </div>
           )}
+
+          <div className={s.commonChatsWrapper}>
+            {expandedParticipant != null && (
+              <div className={s.commonChats}>
+                {renderCommonChats(expandedParticipant.id)}
+              </div>
+            )}
+          </div>
         </>
       )}
 

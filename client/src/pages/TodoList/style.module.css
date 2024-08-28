@@ -12,6 +12,11 @@
   background-color: #313338;
 }
 
+.commonChatsWrapper {
+  height: 100vh;
+  background-color: #313338;
+}
+
 .messageSenderWrapper {
   height: 100vh;
   background-color: #2b2d31;
