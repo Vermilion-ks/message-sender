@@ -87,9 +87,8 @@ todoRoutes
       useWSS: false, // Использовать WSS (или порт 443)
     });
 
-    await client.connect();
-
     try {
+      await client.connect();
       const result = await client.invoke(
         new Api.auth.SendCode({
           phoneNumber: phone,
@@ -362,7 +361,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         }
       }
     }
-    console.log(commonChats[0].chats);
+
     return res
       .status(200)
       .json({ participants: randomParticipants, commonChats: commonChats });
