@@ -70,7 +70,6 @@ const downloadAndSavePhoto = async (client: TelegramClient, dialog: any) => {
       const buffer = await client.downloadProfilePhoto(dialog as any);
       if (buffer instanceof Buffer) {
         await saveFile(filePath, buffer);
-        console.log(`Image saved to ${filePath}`);
       } else {
         console.error(
           `Failed to download photo: returned value is not a Buffer`
@@ -148,8 +147,6 @@ todoRoutes
   .route("/activate-session/:phone")
   .post(async (request: Request, response: Response) => {
     const { phone } = request.params;
-
-    console.log("[INFO] Route /activate-session/:phone called");
 
     // Поиск пользователя в базе данных
     const user = await TodoModel.findOne({ phone: phone });
@@ -339,7 +336,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     let commonChats: { userId: string; chats: any[] }[] = [];
 
     for (const participant of randomParticipants) {
-      console.log(participant.username);
       const entity = participant as any;
 
       if (entity && entity.photo) {
@@ -390,58 +386,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to send message" });
   }
 });
-
-todoRoutes
-  .route("/find-sharedChats")
-  .post(async (req: Request, res: Response) => {
-    const { profile } = req.body;
-    console.log("profile:", profile);
-
-    try {
-      const user = await TodoModel.findOne({ profile });
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      const stringSession = new StringSession(user.session);
-      const client = new TelegramClient(stringSession, apiId, apiHash, {
-        useIPV6: false, // Если нужно использовать IPv6
-        timeout: 60, // Таймаут в секундах, если нужен
-        requestRetries: 5, // Количество попыток повторного запроса
-        connectionRetries: 5, // Количество попыток повторного подключения
-        retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-        autoReconnect: true, // Автоматическое переподключение
-        maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-        securityChecks: true, // Проверка на подделку сообщений
-        appVersion: "1.0", // Версия приложения
-        langCode: "en", // Код языка
-        systemLangCode: "en", // Системный код языка
-        useWSS: false, // Использовать WSS (или порт 443)
-      });
-      await client.connect();
-
-      const dialogs = await client.getDialogs();
-      const sharedChats: any[] = [];
-
-      for (const dialog of dialogs) {
-        const dialogId = dialog.id;
-        if (!dialogId) continue; // Пропускаем, если dialogId undefined
-
-        try {
-          const entity = await client.getEntity(dialogId);
-          // Здесь ты можешь добавить логику проверки, является ли этот чат общим для профиля
-          sharedChats.push(entity);
-        } catch (err) {
-          console.error(`Failed to get entity for dialogId ${dialogId}:`, err);
-        }
-      }
-
-      return res.status(200).json({ sharedChats });
-    } catch (error) {
-      console.error("Failed to retrieve shared chats:", error);
-      res.status(500).json({ error: "Failed to retrieve shared chats" });
-    }
-  });
 
 todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
   const { phone, dialogId, message, participans, sleepTime } = req.body;
