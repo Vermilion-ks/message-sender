@@ -313,7 +313,8 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       : participantsWithPhoto;
 
     const participantsToSend = filteredParticipants.filter(
-      (participant: any) => participant.sender !== mainLogin
+      (participant: any) =>
+        !dialog.participants.some((p: any) => p.sender === mainLogin)
     );
 
     const randomParticipants = participantsToSend
