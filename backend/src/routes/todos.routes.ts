@@ -133,29 +133,21 @@ todoRoutes
   .route("/activate-session/:phone")
   .post(async (request: Request, response: Response) => {
     const { phone } = request.params;
-    console.log("Поиск пользователя в базе данных старт");
     // Поиск пользователя в базе данных
     const user = await TodoModel.findOne({ phone: phone });
     if (!user) {
-      console.log("[INFO] User not found");
       return response.status(404).json({ error: "User not found" });
     }
-    console.log("Поиск пользователя в базе данных стоп");
-    console.log("Отключение предыдущих сессий старт");
     // Отключение предыдущих сессий
     if (user.sessionActive) {
       user.sessionActive = false;
       await user.save();
     }
-    console.log("Отключение предыдущих сессий стоп");
-    console.log("Установка сессии активной старт");
     // Установка сессии активной
     user.sessionActive = true;
     await user.save();
-    console.log("Установка сессии активной стоп");
 
     try {
-      console.log("Коннект пользователя старт");
       const stringSession = new StringSession(user.session);
       const client = new TelegramClient(stringSession, apiId, apiHash, {
         useIPV6: false,
@@ -173,16 +165,12 @@ todoRoutes
       });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
-      console.log("Коннект пользователя стоп");
-      console.log("Скачивание и сохранение фотографий старт");
       // Скачивание и сохранение фотографий
       await Promise.all(
         channelDialogs.map((dialog) =>
           limit(() => downloadAndSavePhoto(client, dialog))
         )
       );
-      console.log("Скачивание и сохранение фотографий стоп");
-      console.log("Поиск диалогов старт");
       const simplifiedDialogs = await Promise.all(
         channelDialogs.map(async (dialog: any) => ({
           id: dialog.id,
@@ -193,7 +181,6 @@ todoRoutes
           participants: dialog.entity?.participantsCount ?? 0,
         }))
       );
-      console.log("Поиск диалогов стоп");
       response.json(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to process request:", error);
@@ -531,7 +518,6 @@ todoRoutes
         const buffer = await client.downloadProfilePhoto(user);
         if (buffer instanceof Buffer) {
           await saveFile(filePath, buffer);
-          console.log(`Image saved to ${filePath}`);
         } else {
           console.error(
             `Failed to download photo: returned value is not a Buffer`
