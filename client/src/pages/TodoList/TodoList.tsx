@@ -345,11 +345,21 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     }
 
     return (
-      <ul>
-        {userChats.chats.map((chat) => (
-          <div>{chat.title}</div>
-        ))}
-      </ul>
+      <div className={s.dialogues}>
+        {userChats.chats.map((chat) => {
+          const formatedChannel = chat.id.replace(/-/g, "");
+          const imageUrl = `${API_BASE_URL}/static/channels/${formatedChannel}.png`;
+
+          return (
+            <div className={`${s.dialogue}`} key={chat.id}>
+              <img className={s.image} src={imageUrl} alt="Profile" />
+              <div className={s.dialogueDetails}>
+                <span className={s.dialogueTitle}>{chat.title}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     );
   };
 
