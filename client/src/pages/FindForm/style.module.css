@@ -37,8 +37,7 @@
   flex: 1; /* Лейбл занимает левую часть */
 }
 .messageCount,
-.messageName,
-.checkbox {
+.messageName {
   background-color: #2b2d31;
   color: #fff;
   border: 1px solid #666;
@@ -46,6 +45,16 @@
   margin-bottom: 10px;
   flex: 1;
   max-width: 200px;
+}
+
+.checkbox {
+  background-color: #2b2d31;
+  color: #fff;
+  border: 1px solid #666;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  flex: 1;
+  max-width: 10px;
 }
 
 .checkbox {
