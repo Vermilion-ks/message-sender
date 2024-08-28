@@ -44,12 +44,12 @@
   border: 1px solid #666;
   margin-left: 10px;
   margin-bottom: 10px;
-  flex: 1; /* Инпут занимает правую часть */
-  max-width: 200px; /* Ограничение максимальной ширины */
+  flex: 1;
+  max-width: 200px;
 }
 
 .checkbox {
-  width: auto; /* Делаем чекбокс автоширины */
+  width: auto;
 }
 
 .messageForm textarea {
