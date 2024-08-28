@@ -131,49 +131,54 @@ todoRoutes
   .route("/activate-session/:phone")
   .post(async (request: Request, response: Response) => {
     const { phone } = request.params;
-
+    console.log("Поиск пользователя в базе данных старт");
     // Поиск пользователя в базе данных
     const user = await TodoModel.findOne({ phone: phone });
     if (!user) {
       console.log("[INFO] User not found");
       return response.status(404).json({ error: "User not found" });
     }
-
+    console.log("Поиск пользователя в базе данных стоп");
+    console.log("Отключение предыдущих сессий старт");
     // Отключение предыдущих сессий
     if (user.sessionActive) {
       user.sessionActive = false;
       await user.save();
     }
-
+    console.log("Отключение предыдущих сессий стоп");
+    console.log("Установка сессии активной старт");
     // Установка сессии активной
     user.sessionActive = true;
     await user.save();
-
-    const stringSession = new StringSession(user.session);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: true,
-      maxConcurrentDownloads: 5,
-      securityChecks: true,
-      appVersion: "1.0",
-      langCode: "en",
-      systemLangCode: "en",
-      useWSS: false,
-    });
+    console.log("Установка сессии активной стоп");
 
     try {
+      console.log("Коннект пользователя старт");
+      const stringSession = new StringSession(user.session);
+      const client = new TelegramClient(stringSession, apiId, apiHash, {
+        useIPV6: false,
+        timeout: 60,
+        requestRetries: 5,
+        connectionRetries: 5,
+        retryDelay: 1000,
+        autoReconnect: true,
+        maxConcurrentDownloads: 5,
+        securityChecks: true,
+        appVersion: "1.0",
+        langCode: "en",
+        systemLangCode: "en",
+        useWSS: false,
+      });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
-
+      console.log("Коннект пользователя стоп");
+      console.log("Скачивание и сохранение фотографий старт");
       // Скачивание и сохранение фотографий
       await Promise.all(
         channelDialogs.map((dialog) => downloadAndSavePhoto(client, dialog))
       );
-
+      console.log("Скачивание и сохранение фотографий стоп");
+      console.log("Поиск диалогов старт");
       const simplifiedDialogs = await Promise.all(
         channelDialogs.map(async (dialog: any) => ({
           id: dialog.id,
@@ -184,13 +189,11 @@ todoRoutes
           participants: dialog.entity?.participantsCount ?? 0,
         }))
       );
-
+      console.log("Поиск диалогов стоп");
       response.json(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to process request:", error);
       response.status(500).json({ error: "Failed to process request" });
-    } finally {
-      await client.disconnect();
     }
   });
 

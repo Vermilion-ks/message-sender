@@ -9,7 +9,6 @@ userRoutes.post("/login", async (req: Request, res: Response) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    console.log(user);
     if (!user) return res.status(404).send("User not found");
 
     const isMatch = await bcrypt.compare(password, user.password);
