@@ -101,6 +101,9 @@
   transition: background-color 0.3s ease; /* Плавный переход цвета фона */
 }
 
+.profileLogin {
+  margin-right: 10px;
+}
 .profilesHeader {
   width: 350px;
   height: 50px;
@@ -132,7 +135,6 @@
 .senderHeader {
   width: 550px;
   height: 50px;
-  background-color: #2b2d31;
   border-left: 1px solid #302f2f;
   transition: background-color 0.3s ease;
   font-size: 20px;

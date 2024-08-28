@@ -385,6 +385,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                   >
                     <PersonPlusFill size={30} color="#666" />
                   </button>
+                  <div className={s.profileLogin}>{user.username}</div>
                 </div>
                 <Table todoLength={todos.length} todoList={todoList} />
               </>
