@@ -311,13 +311,22 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           participant.firstName.toLowerCase().includes(name.toLowerCase())
         )
       : participantsWithPhoto;
-    console.log("participantsToSend:", filteredParticipants);
-    console.log("dialog.participants:", dialog.participants);
     const participantsToSend = filteredParticipants.filter(
-      (participant: any) =>
-        !dialog.participants.some((p: any) => p.sender === mainLogin)
+      (participant: any) => {
+        // Находим участника в dialog.participants с совпадающим username
+        const matchingParticipant = dialog.participants.find(
+          (p: any) => p.userID === participant.username
+        );
+
+        // Если найденный участник существует и его sender совпадает с mainLogin, исключаем его
+        if (matchingParticipant && matchingParticipant.sender === mainLogin) {
+          return false;
+        }
+
+        // В остальных случаях оставляем участника в списке
+        return true;
+      }
     );
-    console.log("participantsToSend:", participantsToSend);
     const randomParticipants = participantsToSend
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
