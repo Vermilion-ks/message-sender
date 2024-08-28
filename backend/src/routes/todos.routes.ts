@@ -182,7 +182,6 @@ todoRoutes
       );
 
       response.json(simplifiedDialogs);
-      console.log(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to get dialogs:", error);
       response.status(500).json({ error: "Failed to get dialogs" });
@@ -303,6 +302,13 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           "../images/participants/",
           entity.username + ".png"
         );
+        const commonGroups = await client.invoke(
+          new Api.messages.GetCommonChats({
+            userId: entity.id,
+            limit: 100, // Устанавливаем лимит на количество возвращаемых групп
+          })
+        );
+        console.log("Общие группы с пользователем:", commonGroups.chats);
         try {
           const buffer = await client.downloadProfilePhoto(entity as any);
           if (buffer instanceof Buffer) {
