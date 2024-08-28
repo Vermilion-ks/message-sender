@@ -525,6 +525,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
           )}
 
           <div className={s.commonChatsWrapper}>
+            <div className={s.senderHeader}>ОБЩИЕ ЧАТЫ</div>
             {expandedParticipant != null && (
               <div className={s.commonChats}>
                 {renderCommonChats(expandedParticipant)}

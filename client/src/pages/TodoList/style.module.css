@@ -217,6 +217,7 @@
 }
 
 .dialogDetailsContainer {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   width: 700px;
@@ -275,8 +276,6 @@
 }
 
 .participantsTable {
-  height: 450px;
-  max-height: 55vh;
   margin-top: 15px;
   margin-left: 10px;
   width: 550px;
