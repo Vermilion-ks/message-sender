@@ -529,7 +529,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
           <div className={s.commonChatsWrapper}>
             {expandedParticipant != null && (
               <div className={s.commonChats}>
-                {renderCommonChats(expandedParticipant.id)}
+                {renderCommonChats(expandedParticipant)}
               </div>
             )}
           </div>
