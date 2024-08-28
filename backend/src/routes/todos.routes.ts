@@ -7,6 +7,8 @@ import { FloodWaitError } from "telegram/errors";
 import bigInt from "big-integer";
 import { promises as fs } from "fs";
 import path from "path";
+import pLimit from "p-limit";
+const limit = pLimit(5);
 
 interface SessionInfo {
   session: string;
@@ -175,7 +177,9 @@ todoRoutes
       console.log("Скачивание и сохранение фотографий старт");
       // Скачивание и сохранение фотографий
       await Promise.all(
-        channelDialogs.map((dialog) => downloadAndSavePhoto(client, dialog))
+        channelDialogs.map((dialog) =>
+          limit(() => downloadAndSavePhoto(client, dialog))
+        )
       );
       console.log("Скачивание и сохранение фотографий стоп");
       console.log("Поиск диалогов старт");
