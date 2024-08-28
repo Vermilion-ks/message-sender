@@ -342,7 +342,10 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           // Добавляем в массив commonChats
           commonChats.push({
             userId: String(entity.id),
-            chats: commonGroups.chats,
+            chats: commonGroups.chats.map((c: any) => ({
+              id: String(c.id), // Преобразуем ID чата в строку
+              ...c,
+            })),
           });
 
           // Загружаем фото профиля
