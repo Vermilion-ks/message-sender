@@ -131,12 +131,14 @@ class TodosService {
   }
 
   async findUsers(
+    mainLogin: string,
     phone: string,
     dialogId: number,
     count: number,
     name?: string
   ) {
     return axios.post(`${TODOS_API_BASE_URL}/profiles/find-users/`, {
+      mainLogin,
       phone,
       dialogId,
       count,

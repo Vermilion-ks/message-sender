@@ -292,7 +292,6 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
         setParticipants(participants);
         setCommonChats(commonChats);
         setShowParticipants(true);
-        console.log(commonChats);
       })
       .catch((err) => {
         console.error(err);
