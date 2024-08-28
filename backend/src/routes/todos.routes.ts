@@ -133,7 +133,7 @@ todoRoutes
   .route("/activate-session/:phone")
   .post(async (request: Request, response: Response) => {
     const { phone } = request.params;
-    // Поиск пользователя в базе данных
+
     const user = await TodoModel.findOne({ phone: phone });
     if (!user) {
       return response.status(404).json({ error: "User not found" });
