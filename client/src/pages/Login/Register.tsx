@@ -44,7 +44,6 @@ const Register: FC = () => {
         loginService
           .register({ username: user.username, password: user.password })
           .then((res: AxiosResponse<User>) => {
-            console.log("Response:", res);
             navigate("/Login");
           })
           .catch((error) => {
