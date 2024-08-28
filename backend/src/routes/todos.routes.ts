@@ -193,15 +193,8 @@ todoRoutes
         channelDialogs.map((dialog) => downloadAndSavePhoto(client, dialog))
       );
 
-      // Фильтрация и упрощение данных
-      const filteredDialogs = channelDialogs.filter(
-        (dialog: any) =>
-          dialog.title !== "JIO Financial Services ЧАТ NICK" &&
-          dialog.title !== "JIO Financial Services | Channel"
-      );
-
       const simplifiedDialogs = await Promise.all(
-        filteredDialogs.map(async (dialog: any) => ({
+        channelDialogs.map(async (dialog: any) => ({
           id: dialog.id,
           title: dialog.title,
           isChannel: dialog.isChannel,
@@ -388,7 +381,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         }
       }
     }
-    console.log(commonChats);
+    console.log(commonChats[0].chats);
     return res
       .status(200)
       .json({ participants: randomParticipants, commonChats: commonChats });
