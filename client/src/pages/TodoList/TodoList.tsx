@@ -71,6 +71,100 @@ export interface Participant {
   verified: boolean;
 }
 
+interface Integer {
+  value: bigint;
+}
+
+interface ChatPhoto {
+  CONSTRUCTOR_ID: number;
+  SUBCLASS_OF_ID: number;
+  className: string;
+  classType: string;
+  flags: number;
+  hasVideo: boolean;
+  photoId: Integer[];
+  strippedThumb: Buffer;
+  dcId: number;
+}
+
+interface ChatBannedRights {
+  CONSTRUCTOR_ID: number;
+  SUBCLASS_OF_ID: number;
+  className: string;
+  classType: string;
+  flags: number;
+  viewMessages: boolean;
+  sendMessages: boolean;
+  sendMedia: boolean;
+  sendStickers: boolean;
+  sendGifs: boolean;
+  sendGames: boolean;
+  sendInline: boolean;
+  embedLinks: boolean;
+  sendPolls: boolean;
+  changeInfo: boolean;
+  inviteUsers: boolean;
+  pinMessages: boolean;
+  manageTopics: boolean;
+  sendPhotos: boolean;
+  sendVideos: boolean;
+  sendRoundvideos: boolean;
+  sendAudios: boolean;
+  sendVoices: boolean;
+  sendDocs: boolean;
+  sendPlain: boolean;
+  untilDate: number;
+}
+
+interface CommonChat {
+  CONSTRUCTOR_ID: number;
+  SUBCLASS_OF_ID: number;
+  className: string;
+  classType: string;
+  flags: number;
+  creator: boolean;
+  left: boolean;
+  broadcast: boolean;
+  verified: boolean;
+  megagroup: boolean;
+  restricted: boolean;
+  signatures: boolean;
+  min: boolean;
+  scam: boolean;
+  hasLink: boolean;
+  hasGeo: boolean;
+  slowmodeEnabled: boolean;
+  callActive: boolean;
+  callNotEmpty: boolean;
+  fake: boolean;
+  gigagroup: boolean;
+  noforwards: boolean;
+  joinToSend: boolean;
+  joinRequest: boolean;
+  forum: boolean;
+  flags2: number;
+  storiesHidden: boolean;
+  storiesHiddenMin: boolean;
+  storiesUnavailable: boolean;
+  id: Integer;
+  accessHash: Integer;
+  title: string;
+  username?: string;
+  photo?: ChatPhoto;
+  date: number;
+  restrictionReason?: string | null;
+  adminRights?: any | null;
+  bannedRights?: ChatBannedRights | null;
+  defaultBannedRights?: ChatBannedRights;
+  participantsCount: number;
+  usernames?: any[] | null;
+  storiesMaxId?: any | null;
+  color?: any | null;
+  profileColor?: any | null;
+  emojiStatus?: any | null;
+  level?: any | null;
+}
+
 const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const [todos, setTodos] = useState<Profile[]>([]);
   const [dialogs, setDialogs] = useState<any[]>([]);
@@ -88,6 +182,9 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const [dialogTitle, setDialogTitle] = useState<string>("");
   const [joinDate, setJoinDate] = useState<number>(0);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [commonChats, setCommonChats] = useState<
+    { userId: string; chats: any[] }[]
+  >([]);
   const [showParticipants, setShowParticipants] = useState<boolean>(false);
   const [expandedParticipant, setExpandedParticipant] = useState(null);
 
@@ -160,6 +257,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
         setJoinDate(joinDate);
         setShowFindForm(true);
         setParticipants([]);
+        setCommonChats([]);
       })
       .catch((err) => {
         console.error("Failed to get dialogue info:", err);
@@ -190,8 +288,9 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     return todoService
       .findUsers(phone, dialogId, count, name)
       .then((res) => {
-        const { participants } = res.data;
+        const { participants, commonChats } = res.data;
         setParticipants(participants);
+        setCommonChats(commonChats);
         setShowParticipants(true);
       })
       .catch((err) => {
@@ -238,12 +337,20 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     setExpandedParticipant(expandedParticipant === id ? null : id);
   };
 
-  // const handleFetchSharedChats = (profileId: string) => {
-  //   todoService
-  //     .getSharedChats(profileId) // Здесь используется ваш метод для получения общих чатов
-  //     .then((res) => setSharedChats(res.data))
-  //     .catch(() => toast.error("Не удалось получить общие чаты"));
-  // };
+  const renderCommonChats = (userId: string) => {
+    const userChats = commonChats.find((chat) => chat.userId === userId);
+    if (!userChats || userChats.chats.length === 0) {
+      return <div>Общие чаты не найдены.</div>;
+    }
+
+    return (
+      <ul>
+        {userChats.chats.map((chat) => (
+          <li key={chat.id.value.toString()}>{chat.title}</li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <div className={s.container}>
@@ -358,6 +465,11 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                               //handleFetchSharedChats(participant.id);
                             }}
                           >
+                            {expandedParticipant === participant.id && (
+                              <div className={s.commonChats}>
+                                {renderCommonChats(participant.id)}
+                              </div>
+                            )}
                             <img
                               src={`${API_BASE_URL}/static/participants/${participant.username}.png`}
                               alt="Profile"

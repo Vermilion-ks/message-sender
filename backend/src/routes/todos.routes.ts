@@ -292,6 +292,9 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
 
+    // Инициализируем массив commonChats
+    let commonChats: { userId: string; chats: any[] }[] = [];
+
     for (const participant of randomParticipants) {
       console.log(participant.username);
       const entity = participant as any;
@@ -302,14 +305,23 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           "../images/participants/",
           entity.username + ".png"
         );
-        const commonGroups = await client.invoke(
-          new Api.messages.GetCommonChats({
-            userId: entity.id,
-            limit: 100, // Устанавливаем лимит на количество возвращаемых групп
-          })
-        );
-        console.log("Общие группы с пользователем:", commonGroups.chats);
+
         try {
+          // Получаем общие группы с пользователем
+          const commonGroups = await client.invoke(
+            new Api.messages.GetCommonChats({
+              userId: entity.id,
+              limit: 100, // Устанавливаем лимит на количество возвращаемых групп
+            })
+          );
+
+          // Добавляем в массив commonChats
+          commonChats.push({
+            userId: String(entity.id),
+            chats: commonGroups.chats,
+          });
+
+          // Загружаем фото профиля
           const buffer = await client.downloadProfilePhoto(entity as any);
           if (buffer instanceof Buffer) {
             await saveFile(filePath, buffer);
@@ -319,11 +331,17 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
             );
           }
         } catch (err) {
-          console.error(`Failed to download or save photo: ${err}`);
+          console.error(
+            `Failed to process participant ${entity.username}:`,
+            err
+          );
         }
       }
     }
-    return res.status(200).json({ participants: randomParticipants });
+
+    return res
+      .status(200)
+      .json({ participants: randomParticipants, commonChats: commonChats });
   } catch (error) {
     console.error("Failed to send message:", error);
     res.status(500).json({ error: "Failed to send message" });
