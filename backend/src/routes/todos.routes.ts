@@ -418,7 +418,7 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
     for (const participant of participans) {
       //await client.sendMessage(participant.username, { message });
       dialog.participants.push({
-        userId: participant.userId,
+        userId: participant.username,
         username: username,
       });
       await sleep(sleepTime * 1000);
