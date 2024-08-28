@@ -13,23 +13,20 @@
 .messageForm {
   display: flex;
   flex-direction: column;
-
-  background-color: #2b2d31; /* Светлый фон */
-
+  background-color: #2b2d31;
   max-width: 520px;
-  max-height: 120px;
-  margin-left: 25px; /* Убираем горизонтальные отступы, чтобы форма была в левой части */
-  align-items: flex-start; /* Выравнивание элементов по левому краю */
-  opacity: 0; /* Начальная невидимость */
-  transform: translateY(20px); /* Начальная позиция для анимации */
-  animation: fadeIn 0.5s forwards; /* Запуск анимации */
+  margin-left: 25px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.5s forwards;
 
   .countForm {
-    font-size: 16px;
-    line-height: 1.5;
-    color: #ffffff;
     display: flex;
-    flex-direction: row;
+    justify-content: space-between; /* Лейбл слева, инпуты справа */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
 
@@ -37,23 +34,22 @@
   font-size: 16px;
   line-height: 1.5;
   color: #ffffff;
+  flex: 1; /* Лейбл занимает левую часть */
 }
-.messageCount {
-  margin-left: 10px;
-  width: 50px;
+.messageCount,
+.messageName,
+.checkbox {
   background-color: #2b2d31;
   color: #fff;
   border: 1px solid #666;
+  margin-left: 10px;
   margin-bottom: 10px;
+  flex: 1; /* Инпут занимает правую часть */
+  max-width: 200px; /* Ограничение максимальной ширины */
 }
 
-.messageName {
-  margin-left: 10px;
-  width: 200px;
-  background-color: #2b2d31;
-  color: #fff;
-  border: 1px solid #666;
-  margin-bottom: 10px;
+.checkbox {
+  width: auto; /* Делаем чекбокс автоширины */
 }
 
 .messageForm textarea {
