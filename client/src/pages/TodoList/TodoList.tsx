@@ -473,7 +473,6 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                             }`}
                             onClick={() => {
                               handleExpandParticipant(participant.id);
-                              //handleFetchSharedChats(participant.id);
                             }}
                           >
                             <img

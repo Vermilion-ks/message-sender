@@ -14,21 +14,6 @@ interface SessionInfo {
   lastName: string;
 }
 
-interface Photo {
-  photoId: { value: bigint };
-  // Другие свойства фото
-}
-
-interface Entity {
-  photo?: Photo;
-  // Другие общие свойства
-}
-
-interface Channel extends Entity {
-  entity: any;
-  // Специфические свойства Channel
-}
-
 const todoRoutes = express.Router();
 let sessionString = process.env.TG_SESSION_STRING || "";
 
@@ -354,10 +339,16 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
             })
           );
 
-          // Добавляем в массив commonChats
           commonChats.push({
-            userId: String(entity.id),
-            chats: commonGroups.chats,
+            userId: String(entity.id), // Преобразуем ID пользователя в строку
+            chats: commonGroups.chats.map((c) => {
+              // Создаем новый объект с преобразованным ID и затем добавляем оставшиеся свойства из c
+              const { id, ...rest } = c; // Деструктуризация объекта c
+              return {
+                id: String(id), // Преобразуем ID чата в строку
+                ...rest, // Оставшиеся свойства объекта c
+              };
+            }),
           });
 
           // Загружаем фото профиля
