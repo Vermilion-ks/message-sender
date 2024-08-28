@@ -47,6 +47,41 @@ const saveFile = async (filePath: string, buffer: Buffer) => {
   }
 };
 
+const getChannelDialogs = async (client: TelegramClient) => {
+  try {
+    const dialogs = await client.getDialogs();
+    return dialogs.filter((dialog: any) => dialog.isChannel);
+  } catch (error) {
+    console.error("[ERROR] Failed to get dialogs:", error);
+    throw new Error("Failed to get dialogs");
+  }
+};
+
+const downloadAndSavePhoto = async (client: TelegramClient, dialog: any) => {
+  if (dialog.entity && dialog.entity.photo) {
+    const cleanId = String(dialog.id).replace(/-/g, "");
+    const filePath = path.resolve(
+      __dirname,
+      "../images/channels/",
+      `${cleanId}.png`
+    );
+
+    try {
+      const buffer = await client.downloadProfilePhoto(dialog as any);
+      if (buffer instanceof Buffer) {
+        await saveFile(filePath, buffer);
+        console.log(`Image saved to ${filePath}`);
+      } else {
+        console.error(
+          `Failed to download photo: returned value is not a Buffer`
+        );
+      }
+    } catch (err) {
+      console.error(`Failed to download or save photo: ${err}`);
+    }
+  }
+};
+
 todoRoutes
   .route("/send-code")
   .post(async (request: Request, response: Response) => {
@@ -135,55 +170,30 @@ todoRoutes
 
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
+      useIPV6: false,
+      timeout: 60,
+      requestRetries: 5,
+      connectionRetries: 5,
+      retryDelay: 1000,
+      autoReconnect: true,
+      maxConcurrentDownloads: 5,
+      securityChecks: true,
+      appVersion: "1.0",
+      langCode: "en",
+      systemLangCode: "en",
+      useWSS: false,
     });
 
-    await client.connect();
-    const profile = await client.getMe();
-    const userId = profile.id;
-
     try {
-      const dialogs = await client.getDialogs();
-      const channelDialogs = dialogs.filter((dialog: any) => dialog.isChannel);
+      await client.connect();
+      const channelDialogs = await getChannelDialogs(client);
 
-      for (const dialog of channelDialogs) {
-        const entity = dialog.entity as any;
+      // Скачивание и сохранение фотографий
+      await Promise.all(
+        channelDialogs.map((dialog) => downloadAndSavePhoto(client, dialog))
+      );
 
-        if (entity && entity.photo) {
-          const cleanId = String(dialog.id).replace(/-/g, "");
-          const filePath = path.resolve(
-            __dirname,
-            "../images/channels/",
-            cleanId + ".png"
-          );
-
-          try {
-            const buffer = await client.downloadProfilePhoto(dialog as any);
-            if (buffer instanceof Buffer) {
-              await saveFile(filePath, buffer);
-              console.log(`Image saved to ${filePath}`);
-            } else {
-              console.error(
-                `Failed to download photo: returned value is not a Buffer`
-              );
-            }
-          } catch (err) {
-            console.error(`Failed to download or save photo: ${err}`);
-          }
-        }
-      }
-
+      // Фильтрация и упрощение данных
       const filteredDialogs = channelDialogs.filter(
         (dialog: any) =>
           dialog.title !== "JIO Financial Services ЧАТ NICK" &&
@@ -203,8 +213,8 @@ todoRoutes
 
       response.json(simplifiedDialogs);
     } catch (error) {
-      console.error("[ERROR] Failed to get dialogs:", error);
-      response.status(500).json({ error: "Failed to get dialogs" });
+      console.error("[ERROR] Failed to process request:", error);
+      response.status(500).json({ error: "Failed to process request" });
     } finally {
       await client.disconnect();
     }
