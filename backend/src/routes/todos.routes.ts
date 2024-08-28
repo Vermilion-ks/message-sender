@@ -316,7 +316,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       (participant: any) =>
         !dialog.participants.some((p: any) => p.sender === mainLogin)
     );
-
+    console.log("participantsToSend:", participantsToSend);
     const randomParticipants = participantsToSend
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
