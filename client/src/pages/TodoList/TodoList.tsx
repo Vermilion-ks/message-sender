@@ -312,6 +312,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
       .then((res) => {
         setDialogParticipantsCount((prev) => prev + participants.length);
         setParticipants([]);
+        setCommonChats([]);
         toast.success("Успешная рассылка сообщений");
       })
       .catch((err) => {
