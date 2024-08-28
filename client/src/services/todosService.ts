@@ -145,6 +145,7 @@ class TodosService {
   }
 
   async sendMessage(
+    username: string,
     phone: string,
     dialogId: number,
     message: string,
@@ -152,6 +153,7 @@ class TodosService {
     sleepTime: number
   ) {
     return axios.post(`${TODOS_API_BASE_URL}/profiles/send-message/`, {
+      username,
       phone,
       dialogId,
       message,

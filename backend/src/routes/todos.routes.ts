@@ -259,7 +259,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 });
 
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
-  const { phone, dialogId, count, name } = req.body;
+  const { mainLogin, phone, dialogId, count, name } = req.body;
 
   const user = await TodoModel.findOne({ phone });
   if (!user) {
@@ -269,18 +269,18 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   try {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
+      useIPV6: false,
+      timeout: 60,
+      requestRetries: 5,
+      connectionRetries: 5,
+      retryDelay: 1000,
+      autoReconnect: true,
+      maxConcurrentDownloads: 5,
+      securityChecks: true,
+      appVersion: "1.0",
+      langCode: "en",
+      systemLangCode: "en",
+      useWSS: false,
     });
     await client.connect();
 
@@ -296,19 +296,16 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     const chat = await client.getEntity(dialogId);
     const participants = await client.getParticipants(chat);
 
-    // Отфильтровываем участников, которые не являются администраторами
     const nonAdminParticipants = participants.filter(
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
 
-    // Отфильтровываем участников, у которых есть фото профиля
     const participantsWithPhoto = nonAdminParticipants.filter(
       (participant: any) =>
         participant.photo && participant.username && participant.photo.photoId
     );
 
-    // Добавляем фильтрацию по имени, если name не пустое
     const filteredParticipants = name
       ? participantsWithPhoto.filter((participant: any) =>
           participant.firstName.toLowerCase().includes(name.toLowerCase())
@@ -316,7 +313,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       : participantsWithPhoto;
 
     const participantsToSend = filteredParticipants.filter(
-      (participant: any) => !dialog?.participants.includes(participant.username)
+      (participant: any) => participant.username !== mainLogin
     );
 
     const randomParticipants = participantsToSend
@@ -341,7 +338,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           const commonGroups: any = await client.invoke(
             new Api.messages.GetCommonChats({
               userId: entity.id,
-              limit: 100, // Устанавливаем лимит на количество возвращаемых групп
+              limit: 100,
             })
           );
 
@@ -373,13 +370,14 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       .status(200)
       .json({ participants: randomParticipants, commonChats: commonChats });
   } catch (error) {
-    console.error("Failed to send message:", error);
-    res.status(500).json({ error: "Failed to send message" });
+    console.error("Failed to find users:", error);
+    res.status(500).json({ error: "Failed to find users" });
   }
 });
 
 todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
-  const { phone, dialogId, message, participans, sleepTime } = req.body;
+  const { username, phone, dialogId, message, participans, sleepTime } =
+    req.body;
 
   const user = await TodoModel.findOne({ phone });
   if (!user) {
@@ -389,18 +387,18 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
   try {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
+      useIPV6: false,
+      timeout: 60,
+      requestRetries: 5,
+      connectionRetries: 5,
+      retryDelay: 1000,
+      autoReconnect: true,
+      maxConcurrentDownloads: 5,
+      securityChecks: true,
+      appVersion: "1.0",
+      langCode: "en",
+      systemLangCode: "en",
+      useWSS: false,
     });
     await client.connect();
 
@@ -419,7 +417,10 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
 
     for (const participant of participans) {
       await client.sendMessage(participant.username, { message });
-      dialog.participants.push(participant.username);
+      dialog.participants.push({
+        userId: participant.userId,
+        username: username,
+      });
       await sleep(sleepTime * 1000);
     }
 

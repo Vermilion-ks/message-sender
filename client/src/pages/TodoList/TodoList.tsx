@@ -286,7 +286,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     count: number
   ): Promise<void> => {
     return todoService
-      .findUsers(phone, dialogId, count, name)
+      .findUsers(user.username, phone, dialogId, count, name)
       .then((res) => {
         const { participants, commonChats } = res.data;
         setParticipants(participants);
@@ -308,7 +308,14 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   ): Promise<void> => {
     setShowParticipants(false);
     return todoService
-      .sendMessage(phone, dialogId, message, participants, sleepTime)
+      .sendMessage(
+        user.username,
+        phone,
+        dialogId,
+        message,
+        participants,
+        sleepTime
+      )
       .then((res) => {
         setDialogParticipantsCount((prev) => prev + participants.length);
         setParticipants([]);
