@@ -348,8 +348,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     return (
       <div className={s.dialogues}>
         {userChats.chats.map((chat) => {
-          const formatedChannel = chat.id.replace(/-/g, "");
-          const imageUrl = `${API_BASE_URL}/static/channels/${formatedChannel}.png`;
+          const imageUrl = `${API_BASE_URL}/static/channels/${chat.id}.png`;
 
           return (
             <div className={`${s.dialogue}`} key={chat.id}>
