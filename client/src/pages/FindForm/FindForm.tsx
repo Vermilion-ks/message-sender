@@ -8,22 +8,28 @@ const FindForm: FC<{
   onSend: (
     phone: string,
     dialogId: number,
-    name: string, // Добавлено имя пользователя
-    count: number
+    firstName: string,
+    lasttName: string,
+    count: number,
+    isPremium: boolean
   ) => Promise<void>;
   onClose: () => void;
 }> = ({ dialogId, phone, onSend, onClose }) => {
-  const [sortedName, setSortedName] = useState<string>(""); // Переименовано для ясности
+  const [sortedFirstName, setSortedFirstName] = useState<string>("");
+  const [sortedLastName, setSortedLastName] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [count, setCount] = useState<number>(1);
+  const [isPremium, setIsPremium] = useState<boolean>(false);
 
   const handleSend = () => {
     setIsSending(true);
-    onSend(phone, dialogId, sortedName, count) // Передаём имя пользователя в onSend
+    onSend(phone, dialogId, sortedFirstName, sortedLastName, count, isPremium)
       .then(() => {
         setIsSending(false);
         setCount(1);
-        setSortedName(""); // Очищаем поле ввода имени после отправки
+        setSortedFirstName("");
+        setSortedLastName("");
+        setIsPremium(false);
       })
       .catch(() => {
         setIsSending(false);
@@ -48,10 +54,31 @@ const FindForm: FC<{
         <span className={s.countText}>Фильтр по имени (может быть пустым)</span>
         <input
           type="text"
-          value={sortedName}
-          onChange={(e) => setSortedName(e.target.value)}
+          value={sortedFirstName}
+          onChange={(e) => setSortedFirstName(e.target.value)}
           placeholder="Имя пользователя"
           className={s.messageName}
+        />
+      </div>
+      <div className={s.countForm}>
+        <span className={s.countText}>
+          Фильтр по фамилии (может быть пустым)
+        </span>
+        <input
+          type="text"
+          value={sortedLastName}
+          onChange={(e) => setSortedLastName(e.target.value)}
+          placeholder="Фамилия пользователя"
+          className={s.messageName}
+        />
+      </div>
+      <div className={s.countForm}>
+        <span className={s.countText}>Только Premium пользователи</span>
+        <input
+          type="checkbox"
+          checked={isPremium}
+          onChange={(e) => setIsPremium(e.target.checked)}
+          className={s.checkbox}
         />
       </div>
       <div className={s.buttonContainer}>

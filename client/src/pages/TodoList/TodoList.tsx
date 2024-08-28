@@ -282,11 +282,21 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const handleFindUsers = (
     phone: string,
     dialogId: number,
-    name: string,
-    count: number
+    firstName: string,
+    lastName: string,
+    count: number,
+    isPremium: boolean
   ): Promise<void> => {
     return todoService
-      .findUsers(user.username, phone, dialogId, count, name)
+      .findUsers(
+        user.username,
+        phone,
+        dialogId,
+        count,
+        firstName,
+        lastName,
+        isPremium
+      )
       .then((res) => {
         const { participants, commonChats } = res.data;
         setParticipants(participants);

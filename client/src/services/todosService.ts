@@ -135,14 +135,18 @@ class TodosService {
     phone: string,
     dialogId: number,
     count: number,
-    name?: string
+    firstName?: string,
+    lastName?: string,
+    isPremium?: boolean
   ) {
     return axios.post(`${TODOS_API_BASE_URL}/profiles/find-users/`, {
       mainLogin,
       phone,
       dialogId,
       count,
-      name,
+      firstName,
+      lastName,
+      isPremium,
     });
   }
 

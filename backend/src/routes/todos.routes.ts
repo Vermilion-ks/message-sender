@@ -259,7 +259,8 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 });
 
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
-  const { mainLogin, phone, dialogId, count, name } = req.body;
+  const { mainLogin, phone, dialogId, count, firstName, lastName, isPremium } =
+    req.body;
 
   const user = await TodoModel.findOne({ phone });
   if (!user) {
@@ -306,11 +307,26 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         participant.photo && participant.username && participant.photo.photoId
     );
 
-    const filteredParticipants = name
-      ? participantsWithPhoto.filter((participant: any) =>
-          participant.firstName.toLowerCase().includes(name.toLowerCase())
-        )
-      : participantsWithPhoto;
+    const filteredParticipants = participantsWithPhoto.filter(
+      (participant: any) => {
+        const matchesFirstName = firstName
+          ? participant.firstName
+              ?.toLowerCase()
+              .includes(firstName.toLowerCase())
+          : true;
+        const matchesLastName = lastName
+          ? participant.lastName?.toLowerCase().includes(lastName.toLowerCase())
+          : true;
+
+        // Проверка на премиум
+        const matchesPremium = isPremium
+          ? participant.premium === true // предполагается, что это поле существует в данных участника
+          : true;
+
+        return matchesFirstName && matchesLastName && matchesPremium;
+      }
+    );
+
     const participantsToSend = filteredParticipants.filter(
       (participant: any) => {
         // Находим участника в dialog.participants с совпадающим username
@@ -327,6 +343,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         return true;
       }
     );
+
     const randomParticipants = participantsToSend
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
