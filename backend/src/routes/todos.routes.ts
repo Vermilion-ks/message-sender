@@ -313,7 +313,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       : participantsWithPhoto;
 
     const participantsToSend = filteredParticipants.filter(
-      (participant: any) => participant.username !== mainLogin
+      (participant: any) => participant.sender !== mainLogin
     );
 
     const randomParticipants = participantsToSend
@@ -419,7 +419,7 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
       //await client.sendMessage(participant.username, { message });
       dialog.participants.push({
         userId: participant.username,
-        username: username,
+        sender: username,
       });
       await sleep(sleepTime * 1000);
     }

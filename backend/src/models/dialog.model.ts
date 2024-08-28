@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 interface Dialog extends Document {
   dialogId: string;
-  participants: { userId: string; username: string }[]; // Измененный формат
+  participants: { userId: string; sender: string }[]; // Измененный формат
 }
 
 const DialogSchema: Schema = new Schema({
@@ -10,7 +10,7 @@ const DialogSchema: Schema = new Schema({
   participants: [
     {
       userId: { type: String, required: true },
-      username: { type: String, required: true },
+      sender: { type: String, required: true },
     },
   ],
 });
