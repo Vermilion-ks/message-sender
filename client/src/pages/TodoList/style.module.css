@@ -338,3 +338,24 @@
 .participantContainer.expanded {
   height: 500px;
 }
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end; /* Выравнивание кнопок по правому краю */
+  gap: 10px; /* Расстояние между кнопками */
+  margin-top: 10px; /* Отступ сверху для кнопок */
+  width: 100%; /* Занимает всю ширину родительского контейнера */
+}
+
+.button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #113d6d; /* Основной цвет кнопок */
+  transition: background-color 0.2s ease;
+  width: 100%;
+}

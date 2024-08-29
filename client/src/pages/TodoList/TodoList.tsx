@@ -485,9 +485,9 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                     )}
                   </>
                 ) : (
-                  <>
+                  <div className={s.buttonContainer}>
                     <button onClick={handleNewSearch}>Новый поиск</button>
-                  </>
+                  </div>
                 )}
 
                 {participants && participants.length > 0 && (
