@@ -138,7 +138,7 @@ todoRoutes
     if (!user) {
       return response.status(404).json({ error: "User not found" });
     }
-    // Отключение предыдущих сессий
+
     if (user.sessionActive) {
       user.sessionActive = false;
       await user.save();
