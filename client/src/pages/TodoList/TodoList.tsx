@@ -379,9 +379,6 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     );
   };
 
-  const handleNewSearch = () => {
-    setParticipants([]);
-  };
   return (
     <div className={s.container}>
       {showAddingTodo ? (
@@ -451,43 +448,32 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
             <div className={s.messageSenderWrapper}>
               <div className={s.dialogDetailsContainer}>
                 <div className={s.senderHeader}>ОТПРАВКА СООБЩЕНИЙ</div>
-                {showParticipants === false ? (
-                  <>
-                    <div className={s.dialogDetails}>
-                      <p>
-                        <strong>Канал:</strong>{" "}
-                        {dialogTitle !== null ? dialogTitle : "Загрузка..."}
-                      </p>
-                      <p>
-                        <strong>Дата вступления:</strong>{" "}
-                        {joinDate !== null
-                          ? formatDate(joinDate)
-                          : "Загрузка..."}
-                      </p>
-                      <p>
-                        <strong>Успешных рассылок сообщений:</strong>{" "}
-                        {dialogParticipantsCount !== null
-                          ? dialogParticipantsCount
-                          : "Загрузка..."}
-                      </p>
-                    </div>
-                    {showFindForm && selectedProfileId && selectedDialogId && (
-                      <FindForm
-                        dialogId={selectedDialogId}
-                        phone={
-                          todos.find(
-                            (profile) => profile._id === selectedProfileId
-                          )?.phone || ""
-                        }
-                        onSend={handleFindUsers}
-                        onClose={() => setShowFindForm(false)}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <div className={s.buttonContainer}>
-                    <button onClick={handleNewSearch}>Новый поиск</button>
-                  </div>
+                <div className={s.dialogDetails}>
+                  <p>
+                    <strong>Канал:</strong>{" "}
+                    {dialogTitle !== null ? dialogTitle : "Загрузка..."}
+                  </p>
+                  <p>
+                    <strong>Дата вступления:</strong>{" "}
+                    {joinDate !== null ? formatDate(joinDate) : "Загрузка..."}
+                  </p>
+                  <p>
+                    <strong>Успешных рассылок сообщений:</strong>{" "}
+                    {dialogParticipantsCount !== null
+                      ? dialogParticipantsCount
+                      : "Загрузка..."}
+                  </p>
+                </div>
+                {showFindForm && selectedProfileId && selectedDialogId && (
+                  <FindForm
+                    dialogId={selectedDialogId}
+                    phone={
+                      todos.find((profile) => profile._id === selectedProfileId)
+                        ?.phone || ""
+                    }
+                    onSend={handleFindUsers}
+                    onClose={() => setShowFindForm(false)}
+                  />
                 )}
 
                 {participants && participants.length > 0 && (
