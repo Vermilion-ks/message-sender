@@ -451,7 +451,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
             <div className={s.messageSenderWrapper}>
               <div className={s.dialogDetailsContainer}>
                 <div className={s.senderHeader}>ОТПРАВКА СООБЩЕНИЙ</div>
-                {!participants ? (
+                {showParticipants === false ? (
                   <>
                     <div className={s.dialogDetails}>
                       <p>
