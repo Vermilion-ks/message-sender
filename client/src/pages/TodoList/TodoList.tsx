@@ -346,17 +346,10 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   };
 
   const handleRemoveParticipant = (id: string, username: string) => {
-    todoService
-      .removeParticipant(username)
-      .then(() => {
-        setParticipants((prevParticipants) =>
-          prevParticipants.filter((participant) => participant.id !== id)
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to remove user:", err);
-        toast.error("Ошибка при удалении пользователя");
-      });
+    setParticipants((prevParticipants) =>
+      prevParticipants.filter((participant) => participant.id !== id)
+    );
+    todoService.removeParticipant(username);
   };
 
   const handleExpandParticipant = (id: string) => {
