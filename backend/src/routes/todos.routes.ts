@@ -249,14 +249,17 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
 todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   const { mainLogin, phone, dialogId, count, firstName, lastName, isPremium } =
     req.body;
-
-  const user = await TodoModel.findOne({ phone });
+  const user = await UserModel.findOne({ username: mainLogin });
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
+  const profile = await TodoModel.findOne({ phone });
+  if (!profile) {
+    return res.status(404).json({ error: "Profile not found" });
+  }
 
   try {
-    const stringSession = new StringSession(user.session);
+    const stringSession = new StringSession(profile.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       useIPV6: false,
       timeout: 60,
@@ -311,7 +314,12 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
           ? participant.premium === true // предполагается, что это поле существует в данных участника
           : true;
 
-        return matchesFirstName && matchesLastName && matchesPremium;
+        // Проверка на игнорируемых пользователей
+        const isIgnored = user.ignoredUsers.includes(participant.username);
+
+        return (
+          matchesFirstName && matchesLastName && matchesPremium && !isIgnored
+        );
       }
     );
 
@@ -462,7 +470,6 @@ todoRoutes
           await user.save();
         }
       }
-      console.log("remove:", username);
       response.status(200).json({ message: "User ignored" });
     } catch (error) {
       console.error("Failed to remove participant:", error);
