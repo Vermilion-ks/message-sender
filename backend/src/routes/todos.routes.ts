@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import DialogModel from "../models/dialog.model";
+import UserModel from "../models/user.model";
 import TodoModel from "../models/todo.model";
 import { Api, TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions";
@@ -451,12 +452,21 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
 todoRoutes
   .route("/remove-participant")
   .post(async (request: Request, response: Response) => {
-    const { username } = request.body;
+    const { mainLogin, username } = request.body;
     try {
+      let user = await UserModel.findOne({ username: mainLogin });
+      if (user) {
+        // Добавляем имя пользователя в массив игнорируемых, если его там еще нет
+        if (!user.ignoredUsers.includes(username)) {
+          user.ignoredUsers.push(username);
+          await user.save();
+        }
+      }
       console.log("remove:", username);
-      response.status(200);
+      response.status(200).json({ message: "User ignored" });
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("Failed to remove participant:", error);
+      response.status(500).json({ error: "Failed to remove participant" });
     }
   });
 

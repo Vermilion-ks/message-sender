@@ -150,8 +150,9 @@ class TodosService {
     });
   }
 
-  async removeParticipant(username: string) {
+  async removeParticipant(mainLogin: string, username: string) {
     return axios.post(`${TODOS_API_BASE_URL}/profiles/remove-participant/`, {
+      mainLogin,
       username,
     });
   }

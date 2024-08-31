@@ -349,7 +349,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     setParticipants((prevParticipants) =>
       prevParticipants.filter((participant) => participant.id !== id)
     );
-    todoService.removeParticipant(username);
+    todoService.removeParticipant(user.username, username);
   };
 
   const handleExpandParticipant = (id: string) => {
