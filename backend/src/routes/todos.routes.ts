@@ -454,6 +454,7 @@ todoRoutes
     const { username } = request.body;
     try {
       console.log("remove:", username);
+      response.status(200);
     } catch (error) {
       console.error("Failed to send message:", error);
     }
