@@ -449,6 +449,17 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
 });
 
 todoRoutes
+  .route("/remove-participant")
+  .post(async (request: Request, response: Response) => {
+    const { username } = request.body;
+    try {
+      console.log("remove:", username);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  });
+
+todoRoutes
   .route("/validate-code")
   .post(async (request: Request, response: Response) => {
     const { phone, code, password } = request.body;

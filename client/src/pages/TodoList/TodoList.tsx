@@ -345,10 +345,18 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     return `${day}.${month}.${year}`;
   };
 
-  const handleRemoveParticipant = (id: string) => {
-    setParticipants((prevParticipants) =>
-      prevParticipants.filter((participant) => participant.id !== id)
-    );
+  const handleRemoveParticipant = (id: string, username: string) => {
+    todoService
+      .removeParticipant(username)
+      .then(() => {
+        setParticipants((prevParticipants) =>
+          prevParticipants.filter((participant) => participant.id !== id)
+        );
+      })
+      .catch((err) => {
+        console.error("Failed to remove user:", err);
+        toast.error("Ошибка при удалении пользователя");
+      });
   };
 
   const handleExpandParticipant = (id: string) => {
@@ -515,7 +523,10 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                               <button
                                 className={s.removeButton}
                                 onClick={() =>
-                                  handleRemoveParticipant(participant.id)
+                                  handleRemoveParticipant(
+                                    participant.id,
+                                    participant.username
+                                  )
                                 }
                               >
                                 &times;

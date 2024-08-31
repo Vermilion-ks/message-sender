@@ -150,6 +150,12 @@ class TodosService {
     });
   }
 
+  async removeParticipant(username: string) {
+    return axios.post(`${TODOS_API_BASE_URL}/profiles/remove-participant/`, {
+      username,
+    });
+  }
+
   async sendMessage(
     username: string,
     phone: string,
