@@ -87,84 +87,6 @@ interface ChatPhoto {
   dcId: number;
 }
 
-interface ChatBannedRights {
-  CONSTRUCTOR_ID: number;
-  SUBCLASS_OF_ID: number;
-  className: string;
-  classType: string;
-  flags: number;
-  viewMessages: boolean;
-  sendMessages: boolean;
-  sendMedia: boolean;
-  sendStickers: boolean;
-  sendGifs: boolean;
-  sendGames: boolean;
-  sendInline: boolean;
-  embedLinks: boolean;
-  sendPolls: boolean;
-  changeInfo: boolean;
-  inviteUsers: boolean;
-  pinMessages: boolean;
-  manageTopics: boolean;
-  sendPhotos: boolean;
-  sendVideos: boolean;
-  sendRoundvideos: boolean;
-  sendAudios: boolean;
-  sendVoices: boolean;
-  sendDocs: boolean;
-  sendPlain: boolean;
-  untilDate: number;
-}
-
-interface CommonChat {
-  CONSTRUCTOR_ID: number;
-  SUBCLASS_OF_ID: number;
-  className: string;
-  classType: string;
-  flags: number;
-  creator: boolean;
-  left: boolean;
-  broadcast: boolean;
-  verified: boolean;
-  megagroup: boolean;
-  restricted: boolean;
-  signatures: boolean;
-  min: boolean;
-  scam: boolean;
-  hasLink: boolean;
-  hasGeo: boolean;
-  slowmodeEnabled: boolean;
-  callActive: boolean;
-  callNotEmpty: boolean;
-  fake: boolean;
-  gigagroup: boolean;
-  noforwards: boolean;
-  joinToSend: boolean;
-  joinRequest: boolean;
-  forum: boolean;
-  flags2: number;
-  storiesHidden: boolean;
-  storiesHiddenMin: boolean;
-  storiesUnavailable: boolean;
-  id: Integer;
-  accessHash: Integer;
-  title: string;
-  username?: string;
-  photo?: ChatPhoto;
-  date: number;
-  restrictionReason?: string | null;
-  adminRights?: any | null;
-  bannedRights?: ChatBannedRights | null;
-  defaultBannedRights?: ChatBannedRights;
-  participantsCount: number;
-  usernames?: any[] | null;
-  storiesMaxId?: any | null;
-  color?: any | null;
-  profileColor?: any | null;
-  emojiStatus?: any | null;
-  level?: any | null;
-}
-
 const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const [todos, setTodos] = useState<Profile[]>([]);
   const [dialogs, setDialogs] = useState<any[]>([]);
@@ -352,6 +274,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   };
 
   const getUserStatus = (status: string) => {
+    console.log(status);
     const statusMap: { [key: string]: string } = {
       userStatusRecently: "Был(а) недавно",
       userStatusLastWeek: "Был(а) на прошлой неделе",
