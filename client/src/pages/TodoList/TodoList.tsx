@@ -351,6 +351,18 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     setExpandedParticipant(expandedParticipant === id ? null : id);
   };
 
+  const getUserStatus = (user: Participant) => {
+    const statusMap: { [key: string]: string } = {
+      userStatusRecently: "Был(а) недавно",
+      userStatusLastWeek: "Был(а) на прошлой неделе",
+      userStatusLastMonth: "Был(а) в прошлом месяце",
+      userStatusOffline: "Offline",
+      userStatusOnline: "Online",
+      userStatusEmpty: "Empty",
+    };
+
+    return user.status.className ? statusMap[user.status.className] : undefined;
+  };
   const renderCommonChats = (userId: string) => {
     const userChats = commonChats.find((chat) => chat.userId === userId);
     if (!userChats || userChats.chats.length === 0) {
@@ -515,7 +527,8 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                   {participant.firstName} {participant.lastName}
                                 </span>
                                 <span className={s.dialogueParticipants}>
-                                  @{participant.username}
+                                  @{participant.username} |{" "}
+                                  {getUserStatus(participant)}
                                 </span>
                               </div>
                             )}
