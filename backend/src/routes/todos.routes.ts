@@ -182,17 +182,12 @@ todoRoutes
               limit: 99999,
             })
           );
-          console.log("true");
           return true; // если данные получены успешно
         } catch (error) {
           if (
             error instanceof RPCError &&
             error.errorMessage === "CHAT_ADMIN_REQUIRED"
           ) {
-            console.error(
-              "Не хватает прав администратора для просмотра участников чата"
-            );
-            console.log("false");
             return false; // если требуется права администратора
           }
           throw error; // пробрасываем ошибку дальше, если она другая
@@ -207,10 +202,10 @@ todoRoutes
           isGroup: dialog.isGroup,
           isUser: dialog.isUser,
           participants: dialog.entity?.participantsCount ?? 0,
-          hidden: await getDialogueData(dialog.id), // ждём результат функции
+          visible: await getDialogueData(dialog.id),
         }))
       );
-
+      //
       response.json(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to process request:", error);
