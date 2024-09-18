@@ -187,6 +187,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   >([]);
   const [showParticipants, setShowParticipants] = useState<boolean>(false);
   const [expandedParticipant, setExpandedParticipant] = useState(null);
+  const [filterText, setFilterText] = useState("");
 
   useEffect(() => {
     setLoadingTodos(true);
@@ -203,7 +204,9 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
         setLoadingTodos(false);
       });
   }, [user._id]);
-
+  const filteredDialogues = dialogs.filter((dialog) =>
+    dialog.title.toLowerCase().includes(filterText.toLowerCase())
+  );
   const handleTodoAdded = () => {
     setLoadingTodos(true);
     todoService
@@ -402,19 +405,31 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
           </div>
           <div className={s.dialoguesWrapper}>
             {selectedProfileId ? (
-              <div className={s.dialoguesHeader}>ДИАЛОГИ</div>
+              <>
+                <div className={s.dialoguesHeader}>ДИАЛОГИ</div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Фильтр по названию"
+                    value={filterText}
+                    onChange={(e) => setFilterText(e.target.value)}
+                    className={s.filterInput}
+                  />
+                </div>
+              </>
             ) : null}
 
             <div className={s.dialogues}>
               {loadingDialogs ? (
                 <Spinner />
               ) : (
-                dialogs.map((dialog) => {
-                  const formatedChannel = dialog.id.replace(/\-/g, "");
-                  const imageUrl = `${API_BASE_URL}/static/channels/${formatedChannel}.png`;
+                filteredDialogues.map((dialog) => {
+                  const formattedChannel = dialog.id.replace(/-/g, "");
+                  const imageUrl = `${API_BASE_URL}/static/channels/${formattedChannel}.png`;
                   const phone =
                     todos.find((profile) => profile._id === selectedProfileId)
                       ?.phone || "";
+
                   return (
                     <div
                       className={`${s.dialogue} ${
