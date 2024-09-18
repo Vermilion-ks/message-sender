@@ -166,24 +166,46 @@ todoRoutes
       });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
-      channelDialogs.forEach(async (dialog: any) => {
-        console.log((await client.getParticipants(dialog)).length);
-      });
       await Promise.all(
         channelDialogs.map((dialog) =>
           limit(() => downloadAndSavePhoto(client, dialog))
         )
       );
       const simplifiedDialogs = await Promise.all(
-        channelDialogs.map(async (dialog: any) => ({
-          id: dialog.id,
-          title: dialog.title,
-          isChannel: dialog.isChannel,
-          isGroup: dialog.isGroup,
-          isUser: dialog.isUser,
-          participants: dialog.entity?.participantsCount ?? 0,
-        }))
+        channelDialogs.map(async (dialog: any) => {
+          let hidden = false;
+
+          try {
+            // Пробуем получить участников
+            const participants = await client.getParticipants(dialog);
+            hidden = participants.length === 0;
+          } catch (error) {
+            // Проверяем, является ли ошибка объектом и содержит ли поле errorMessage
+            if (
+              error instanceof Error &&
+              (error as any).errorMessage === "CHAT_ADMIN_REQUIRED"
+            ) {
+              hidden = true;
+            } else {
+              // Если ошибка другая, пробрасываем её дальше
+              throw error;
+            }
+          }
+
+          return {
+            id: dialog.id,
+            title: dialog.title,
+            isChannel: dialog.isChannel,
+            isGroup: dialog.isGroup,
+            isUser: dialog.isUser,
+            participants: dialog.entity?.participantsCount ?? 0,
+            hidden: hidden,
+          };
+        })
       );
+      simplifiedDialogs.forEach((dialog: any) => {
+        console.log(dialog.hidden);
+      });
       response.json(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to process request:", error);
