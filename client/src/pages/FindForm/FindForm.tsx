@@ -43,13 +43,11 @@ const FindForm: FC<{
           Количество пользователей для поиска:
         </span>
         <input
-          type="number"
-          value={""}
-          onChange={(e) =>
-            setCount(e.target.value === "" ? 1 : Number(e.target.value))
-          }
-          min="1"
-          className={s.messageCount}
+          type="text"
+          value={count}
+          onChange={(e) => setCount(Number(e.target.value))}
+          placeholder="Имя пользователя"
+          className={s.messageName}
         />
       </div>
       <div className={s.countForm}>
