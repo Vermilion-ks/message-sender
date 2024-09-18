@@ -276,12 +276,12 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const getUserStatus = (status: string) => {
     console.log(status);
     const statusMap: { [key: string]: string } = {
-      userStatusRecently: "Был(а) недавно",
-      userStatusLastWeek: "Был(а) на прошлой неделе",
-      userStatusLastMonth: "Был(а) в прошлом месяце",
-      userStatusOffline: "Offline",
-      userStatusOnline: "Online",
-      userStatusEmpty: "Empty",
+      UserStatusRecently: "Был(а) недавно",
+      UserStatusLastWeek: "Был(а) на прошлой неделе",
+      UserStatusLastMonth: "Был(а) в прошлом месяце",
+      UserStatusOffline: "Offline",
+      UserStatusOnline: "Online",
+      UserStatusEmpty: "Empty",
     };
 
     return status ? statusMap[status] : undefined;
@@ -451,7 +451,11 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                 </span>
                                 <span className={s.dialogueParticipants}>
                                   @{participant.username} |{" "}
-                                  {getUserStatus(participant.status.className)}
+                                  {participant.status.className
+                                    ? getUserStatus(
+                                        participant.status.className
+                                      )
+                                    : "Не известно"}
                                 </span>
                               </div>
                             )}
