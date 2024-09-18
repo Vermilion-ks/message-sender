@@ -252,7 +252,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
       })
     );
     //@ts-ignore
-    console.log(result.count);
+    //console.log(result.count);
 
     // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
@@ -335,8 +335,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         limit: 99999,
       })
     );
-    //@ts-ignore
-    console.log(participants.users);
     //@ts-ignore
     const nonAdminParticipants = participants.users.filter(
       (participant: any) =>

@@ -371,7 +371,13 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                         selectedDialogId === dialog.id ? s.selected : ""
                       }`}
                       key={dialog.id}
-                      onClick={() => handleDialogClick(dialog.id, phone)}
+                      onClick={() => {
+                        if (dialog.visible) {
+                          handleDialogClick(dialog.id, phone);
+                        } else {
+                          toast.error("Список участников в этом канале скрыт");
+                        }
+                      }}
                     >
                       <img className={s.image} src={imageUrl} alt="Profile" />
                       <div className={s.dialogueDetails}>
