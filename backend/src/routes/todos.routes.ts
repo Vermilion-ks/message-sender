@@ -4,7 +4,7 @@ import UserModel from "../models/user.model";
 import TodoModel from "../models/todo.model";
 import { Api, TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions";
-import { FloodWaitError } from "telegram/errors";
+import { FloodWaitError, RPCError } from "telegram/errors";
 import bigInt from "big-integer";
 import { promises as fs } from "fs";
 import path from "path";
@@ -173,17 +173,31 @@ todoRoutes
         )
       );
       async function getDialogueData(id: number) {
-        const result = await client.invoke(
-          new Api.channels.GetParticipants({
-            channel: id,
-            filter: new Api.ChannelParticipantsRecent(),
-            offset: 43,
-            limit: 99999,
-          })
-        );
-        console.log(result);
-        return result;
+        try {
+          const result = await client.invoke(
+            new Api.channels.GetParticipants({
+              channel: id,
+              filter: new Api.ChannelParticipantsRecent(),
+              offset: 43,
+              limit: 99999,
+            })
+          );
+          console.log(result);
+          return true; // если данные получены успешно
+        } catch (error) {
+          if (
+            error instanceof RPCError &&
+            error.errorMessage === "CHAT_ADMIN_REQUIRED"
+          ) {
+            console.error(
+              "Не хватает прав администратора для просмотра участников чата"
+            );
+            return false; // если требуется права администратора
+          }
+          throw error; // пробрасываем ошибку дальше, если она другая
+        }
       }
+
       const simplifiedDialogs = await Promise.all(
         channelDialogs.map(async (dialog: any) => ({
           id: dialog.id,
@@ -192,7 +206,7 @@ todoRoutes
           isGroup: dialog.isGroup,
           isUser: dialog.isUser,
           participants: dialog.entity?.participantsCount ?? 0,
-          data: getDialogueData(dialog.id),
+          hidden: await getDialogueData(dialog.id), // ждём результат функции
         }))
       );
 
