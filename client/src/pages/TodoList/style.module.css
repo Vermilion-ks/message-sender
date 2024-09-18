@@ -359,3 +359,17 @@
   transition: background-color 0.2s ease;
   width: 100%;
 }
+.filterWrapper {
+  display: flex;
+
+  .filterInput {
+    background-color: #2b2d31;
+    color: #fff;
+    border: 1px solid #666;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    flex: 1;
+    max-width: 200px;
+    align-items: stretch;
+  }
+}

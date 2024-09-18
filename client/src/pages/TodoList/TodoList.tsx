@@ -407,7 +407,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
             {selectedProfileId ? (
               <>
                 <div className={s.dialoguesHeader}>ДИАЛОГИ</div>
-                <div>
+                <div className={s.filterWrapper}>
                   <input
                     type="text"
                     placeholder="Фильтр по названию"
