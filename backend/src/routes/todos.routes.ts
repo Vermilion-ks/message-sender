@@ -214,7 +214,15 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     });
     await client.connect();
     const entity = await client.getEntity(id);
-    console.log(entity);
+    const result = await client.invoke(
+      new Api.channels.GetParticipants({
+        channel: "username",
+        filter: new Api.ChannelParticipantsRecent(),
+        offset: 43,
+        limit: 100,
+      })
+    );
+    console.log(result);
     // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
     if ("title" in entity) {
