@@ -182,7 +182,7 @@ todoRoutes
               limit: 99999,
             })
           );
-          console.log(result);
+          console.log("true");
           return true; // если данные получены успешно
         } catch (error) {
           if (
@@ -192,6 +192,7 @@ todoRoutes
             console.error(
               "Не хватает прав администратора для просмотра участников чата"
             );
+            console.log("false");
             return false; // если требуется права администратора
           }
           throw error; // пробрасываем ошибку дальше, если она другая
