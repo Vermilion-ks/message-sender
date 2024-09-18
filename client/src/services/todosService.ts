@@ -162,8 +162,7 @@ class TodosService {
     phone: string,
     dialogId: number,
     message: string,
-    participans: Participant[],
-    sleepTime: number
+    participans: Participant[]
   ) {
     return axios.post(`${TODOS_API_BASE_URL}/profiles/send-message/`, {
       username,
@@ -171,7 +170,6 @@ class TodosService {
       dialogId,
       message,
       participans,
-      sleepTime,
     });
   }
 }

@@ -312,19 +312,11 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
   const handleSendMessage = (
     phone: string,
     dialogId: number,
-    message: string,
-    sleepTime: number
+    message: string
   ): Promise<void> => {
     setShowParticipants(false);
     return todoService
-      .sendMessage(
-        user.username,
-        phone,
-        dialogId,
-        message,
-        participants,
-        sleepTime
-      )
+      .sendMessage(user.username, phone, dialogId, message, participants)
       .then((res) => {
         setDialogParticipantsCount((prev) => prev + participants.length);
         setParticipants([]);

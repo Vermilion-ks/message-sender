@@ -166,76 +166,22 @@ todoRoutes
       });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
+      // Скачивание и сохранение фотографий
       await Promise.all(
         channelDialogs.map((dialog) =>
           limit(() => downloadAndSavePhoto(client, dialog))
         )
       );
-      const sleep = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
       const simplifiedDialogs = await Promise.all(
-        channelDialogs.map(async (dialog: any) => {
-          let hidden = false;
-          let participants = 0;
-
-          try {
-            // Пробуем получить участников
-            const result = await client.getParticipants(dialog);
-            participants = result.length;
-            hidden = participants === 0;
-          } catch (error: any) {
-            // Проверка на ошибку flood wait
-            if (
-              error.errorMessage &&
-              error.errorMessage.includes("FLOOD_WAIT")
-            ) {
-              const waitTime =
-                parseInt(error.errorMessage.match(/\d+/)[0], 10) * 1000; // Извлекаем количество секунд
-              console.log(
-                `Flood wait detected. Sleeping for ${waitTime / 1000} seconds.`
-              );
-              await sleep(waitTime); // Ожидаем указанное время
-              // Повторяем попытку после ожидания
-              try {
-                const result = await client.getParticipants(dialog);
-                participants = result.length;
-                hidden = participants === 0;
-              } catch (error) {
-                if (
-                  error instanceof Error &&
-                  (error as any).errorMessage === "CHAT_ADMIN_REQUIRED"
-                ) {
-                  hidden = true;
-                } else {
-                  throw error;
-                }
-              }
-            } else if (
-              error instanceof Error &&
-              (error as any).errorMessage === "CHAT_ADMIN_REQUIRED"
-            ) {
-              hidden = true;
-            } else {
-              // Если ошибка другая, пробрасываем её дальше
-              throw error;
-            }
-          }
-
-          return {
-            id: dialog.id,
-            title: dialog.title,
-            isChannel: dialog.isChannel,
-            isGroup: dialog.isGroup,
-            isUser: dialog.isUser,
-            participants: dialog.entity?.participantsCount ?? participants,
-            hidden,
-          };
-        })
+        channelDialogs.map(async (dialog: any) => ({
+          id: dialog.id,
+          title: dialog.title,
+          isChannel: dialog.isChannel,
+          isGroup: dialog.isGroup,
+          isUser: dialog.isUser,
+          participants: dialog.entity?.participantsCount ?? 0,
+        }))
       );
-      simplifiedDialogs.forEach((dialog: any) => {
-        console.log(dialog.hidden);
-      });
       response.json(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to process request:", error);
@@ -341,7 +287,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 
     const chat = await client.getEntity(dialogId);
     const participants = await client.getParticipants(chat);
-    console.log(participants);
 
     const nonAdminParticipants = participants.filter(
       (participant: any) =>
@@ -455,8 +400,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 });
 
 todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
-  const { username, phone, dialogId, message, participans, sleepTime } =
-    req.body;
+  const { username, phone, dialogId, message, participans } = req.body;
 
   const user = await TodoModel.findOne({ phone });
   if (!user) {
@@ -494,12 +438,17 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
       return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
+    function getRandomSleepTime(min: number, max: number): number {
+      return Math.random() * (max - min) + min;
+    }
+
     for (const participant of participans) {
       await client.sendMessage(participant.username, { message });
       dialog.participants.push({
         userId: participant.username,
         sender: username,
       });
+      const sleepTime = getRandomSleepTime(15, 25);
       await sleep(sleepTime * 1000);
     }
 
