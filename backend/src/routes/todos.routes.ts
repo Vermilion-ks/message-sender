@@ -172,28 +172,28 @@ todoRoutes
           limit(() => downloadAndSavePhoto(client, dialog))
         )
       );
-      async function getDialogueData(id: number) {
-        try {
-          const result = await client.invoke(
-            new Api.channels.GetParticipants({
-              channel: id,
-              filter: new Api.ChannelParticipantsRecent(),
-              offset: 43,
-              limit: 99999,
-            })
-          );
-          console.log(result);
-          return true; // если данные получены успешно
-        } catch (error) {
-          if (
-            error instanceof RPCError &&
-            error.errorMessage === "CHAT_ADMIN_REQUIRED"
-          ) {
-            return false; // если требуется права администратора
-          }
-          throw error; // пробрасываем ошибку дальше, если она другая
-        }
-      }
+      // async function getDialogueData(id: number) {
+      //   try {
+      //     const result = await client.invoke(
+      //       new Api.channels.GetParticipants({
+      //         channel: id,
+      //         filter: new Api.ChannelParticipantsRecent(),
+      //         offset: 43,
+      //         limit: 99999,
+      //       })
+      //     );
+      //     console.log(result);
+      //     return true; // если данные получены успешно
+      //   } catch (error) {
+      //     if (
+      //       error instanceof RPCError &&
+      //       error.errorMessage === "CHAT_ADMIN_REQUIRED"
+      //     ) {
+      //       return false; // если требуется права администратора
+      //     }
+      //     throw error; // пробрасываем ошибку дальше, если она другая
+      //   }
+      // }
 
       const simplifiedDialogs = await Promise.all(
         channelDialogs.map(async (dialog: any) => ({
@@ -203,7 +203,7 @@ todoRoutes
           isGroup: dialog.isGroup,
           isUser: dialog.isUser,
           participants: dialog.entity?.participantsCount ?? 0,
-          visible: await getDialogueData(dialog.id),
+          //visible: await getDialogueData(dialog.id),
         }))
       );
       //
@@ -239,6 +239,15 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     });
     await client.connect();
     const entity = await client.getEntity(id);
+    const result = await client.invoke(
+      new Api.channels.GetParticipants({
+        channel: id,
+        filter: new Api.ChannelParticipantsRecent(),
+        offset: 43,
+        limit: 99999,
+      })
+    );
+    console.log(result);
 
     // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
