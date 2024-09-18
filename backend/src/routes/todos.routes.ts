@@ -172,6 +172,18 @@ todoRoutes
           limit(() => downloadAndSavePhoto(client, dialog))
         )
       );
+      async function getDialogueData(id: number) {
+        const result = await client.invoke(
+          new Api.channels.GetParticipants({
+            channel: id,
+            filter: new Api.ChannelParticipantsRecent(),
+            offset: 43,
+            limit: 99999,
+          })
+        );
+        console.log(result);
+        return result;
+      }
       const simplifiedDialogs = await Promise.all(
         channelDialogs.map(async (dialog: any) => ({
           id: dialog.id,
@@ -180,8 +192,10 @@ todoRoutes
           isGroup: dialog.isGroup,
           isUser: dialog.isUser,
           participants: dialog.entity?.participantsCount ?? 0,
+          data: getDialogueData(dialog.id),
         }))
       );
+
       response.json(simplifiedDialogs);
     } catch (error) {
       console.error("[ERROR] Failed to process request:", error);
@@ -214,15 +228,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     });
     await client.connect();
     const entity = await client.getEntity(id);
-    const result = await client.invoke(
-      new Api.channels.GetParticipants({
-        channel: id,
-        filter: new Api.ChannelParticipantsRecent(),
-        offset: 43,
-        limit: 100,
-      })
-    );
-    console.log(result);
+
     // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
     if ("title" in entity) {
