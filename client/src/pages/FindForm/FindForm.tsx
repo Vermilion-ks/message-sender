@@ -44,8 +44,10 @@ const FindForm: FC<{
         </span>
         <input
           type="number"
-          value={count}
-          onChange={(e) => setCount(Number(e.target.value))}
+          value={""}
+          onChange={(e) =>
+            setCount(e.target.value === "" ? 1 : Number(e.target.value))
+          }
           min="1"
           className={s.messageCount}
         />
