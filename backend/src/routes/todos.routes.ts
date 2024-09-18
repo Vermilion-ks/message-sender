@@ -337,7 +337,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     );
     console.log(participants);
     //@ts-ignore
-    const nonAdminParticipants = participants.participants.filter(
+    const nonAdminParticipants = participants.filter(
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
