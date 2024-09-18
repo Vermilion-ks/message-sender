@@ -166,6 +166,7 @@ todoRoutes
       });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
+      console.log(channelDialogs);
       // Скачивание и сохранение фотографий
       await Promise.all(
         channelDialogs.map((dialog) =>
