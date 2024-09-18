@@ -346,7 +346,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 
     // Инициализируем массив commonChats
     let commonChats: { userId: string; chats: any[] }[] = [];
-
+    console.log(randomParticipants);
     for (const participant of randomParticipants) {
       const entity = participant as any;
 
