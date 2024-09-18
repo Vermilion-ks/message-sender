@@ -171,17 +171,47 @@ todoRoutes
           limit(() => downloadAndSavePhoto(client, dialog))
         )
       );
+      const sleep = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+
       const simplifiedDialogs = await Promise.all(
         channelDialogs.map(async (dialog: any) => {
           let hidden = false;
+          let participants = 0;
 
           try {
             // Пробуем получить участников
-            const participants = await client.getParticipants(dialog);
-            hidden = participants.length === 0;
-          } catch (error) {
-            // Проверяем, является ли ошибка объектом и содержит ли поле errorMessage
+            const result = await client.getParticipants(dialog);
+            participants = result.length;
+            hidden = participants === 0;
+          } catch (error: any) {
+            // Проверка на ошибку flood wait
             if (
+              error.errorMessage &&
+              error.errorMessage.includes("FLOOD_WAIT")
+            ) {
+              const waitTime =
+                parseInt(error.errorMessage.match(/\d+/)[0], 10) * 1000; // Извлекаем количество секунд
+              console.log(
+                `Flood wait detected. Sleeping for ${waitTime / 1000} seconds.`
+              );
+              await sleep(waitTime); // Ожидаем указанное время
+              // Повторяем попытку после ожидания
+              try {
+                const result = await client.getParticipants(dialog);
+                participants = result.length;
+                hidden = participants === 0;
+              } catch (error) {
+                if (
+                  error instanceof Error &&
+                  (error as any).errorMessage === "CHAT_ADMIN_REQUIRED"
+                ) {
+                  hidden = true;
+                } else {
+                  throw error;
+                }
+              }
+            } else if (
               error instanceof Error &&
               (error as any).errorMessage === "CHAT_ADMIN_REQUIRED"
             ) {
@@ -198,8 +228,8 @@ todoRoutes
             isChannel: dialog.isChannel,
             isGroup: dialog.isGroup,
             isUser: dialog.isUser,
-            participants: dialog.entity?.participantsCount ?? 0,
-            hidden: hidden,
+            participants: dialog.entity?.participantsCount ?? participants,
+            hidden,
           };
         })
       );
