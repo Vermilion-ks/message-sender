@@ -216,7 +216,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     const entity = await client.getEntity(id);
     const result = await client.invoke(
       new Api.channels.GetParticipants({
-        channel: "username",
+        channel: id,
         filter: new Api.ChannelParticipantsRecent(),
         offset: 43,
         limit: 100,
