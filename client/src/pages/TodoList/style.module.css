@@ -361,6 +361,7 @@
 }
 .filterWrapper {
   display: flex;
+  justify-content: center;
 
   .filterInput {
     background-color: #2b2d31;
@@ -369,7 +370,7 @@
     margin-left: 10px;
     margin-bottom: 10px;
     flex: 1;
-    max-width: 200px;
+    max-width: 400px;
     align-items: stretch;
   }
 }
