@@ -234,7 +234,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
         .status(200)
         .json({ participants: 0, title: chatTitle, joinDate: joinDate });
     }
-
+    console.log(dialog.participants);
     return res.status(200).json({
       participants: dialog.participants.length,
       title: chatTitle,
@@ -286,6 +286,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     }
 
     const chat = await client.getEntity(dialogId);
+
     const participants = await client.getParticipants(chat);
 
     const nonAdminParticipants = participants.filter(
