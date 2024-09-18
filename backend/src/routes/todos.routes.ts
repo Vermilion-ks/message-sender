@@ -335,9 +335,10 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         limit: 99999,
       })
     );
-    console.log(participants);
     //@ts-ignore
-    const nonAdminParticipants = participants.filter(
+    console.log(participants.users);
+    //@ts-ignore
+    const nonAdminParticipants = participants.users.filter(
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
