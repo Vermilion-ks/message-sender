@@ -205,6 +205,11 @@
 .dialogueParticipants {
   color: #888;
   font-size: 17px;
+
+  .hiddenParticipants {
+    font-weight: bold;
+    color: red;
+  }
 }
 
 /* Firefox стили */

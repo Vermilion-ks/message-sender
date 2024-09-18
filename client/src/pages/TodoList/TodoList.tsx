@@ -378,7 +378,13 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                         <span className={s.dialogueTitle}>{dialog.title}</span>
                         <span className={s.dialogueParticipants}>
                           Участников: {dialog.participants}
-                          {dialog.visible ? "" : "| участники скрыты"}
+                          {dialog.visible ? (
+                            ""
+                          ) : (
+                            <span className={s.hiddenParticipants}>
+                              (профили скрыты)
+                            </span>
+                          )}
                         </span>
                       </div>
                     </div>
