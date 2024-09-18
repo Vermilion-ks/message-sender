@@ -242,7 +242,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Failed to get dialog:", error);
-    //res.status(500).json({ error: "Failed to get dialog" });
+    res.status(500).json({ error: "Failed to get dialog" });
   }
 });
 
