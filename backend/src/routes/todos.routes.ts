@@ -214,7 +214,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     });
     await client.connect();
     const entity = await client.getEntity(id);
-
+    console.log(entity);
     // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
     if ("title" in entity) {
@@ -234,7 +234,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
         .status(200)
         .json({ participants: 0, title: chatTitle, joinDate: joinDate });
     }
-    console.log(dialog.participants);
+
     return res.status(200).json({
       participants: dialog.participants.length,
       title: chatTitle,
