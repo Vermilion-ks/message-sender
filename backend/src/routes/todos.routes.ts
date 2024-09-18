@@ -247,7 +247,8 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
         limit: 99999,
       })
     );
-    console.log(result);
+    //@ts-ignore
+    console.log(result.count);
 
     // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
