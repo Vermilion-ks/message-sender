@@ -382,6 +382,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                             ""
                           ) : (
                             <span className={s.hiddenParticipants}>
+                              {" "}
                               (профили скрыты)
                             </span>
                           )}

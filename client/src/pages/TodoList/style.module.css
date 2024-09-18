@@ -207,8 +207,8 @@
   font-size: 17px;
 
   .hiddenParticipants {
-    font-weight: bold;
-    color: red;
+    color: #dd2c2c;
+    font-weight: 400;
   }
 }
 
