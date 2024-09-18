@@ -166,7 +166,7 @@ todoRoutes
       });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
-      console.log(channelDialogs);
+      //console.log(channelDialogs);
       // Скачивание и сохранение фотографий
       await Promise.all(
         channelDialogs.map((dialog) =>
@@ -288,6 +288,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 
     const chat = await client.getEntity(dialogId);
     const participants = await client.getParticipants(chat);
+    console.log(participants);
 
     const nonAdminParticipants = participants.filter(
       (participant: any) =>
