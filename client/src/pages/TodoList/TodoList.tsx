@@ -472,10 +472,8 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                     ? getUserStatus(
                                         participant.status.className
                                       )
-                                    : "Не известно"}
-                                </span>
-                                <span className={s.dialogueParticipants}>
-                                  Телефон:{" "}
+                                    : "Не известно"}{" "}
+                                  | Телефон:{" "}
                                   {participant.phone
                                     ? participant.phone
                                     : "Скрыт"}
