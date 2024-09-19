@@ -325,7 +325,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     }
 
     const chat = await client.getEntity(dialogId);
-
+    //
     //const participants = await client.getParticipants(chat);
     const participants = await client.invoke(
       new Api.channels.GetParticipants({

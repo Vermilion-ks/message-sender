@@ -284,7 +284,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
       UserStatusEmpty: "Empty",
     };
 
-    return status ? statusMap[status] : undefined;
+    return status ? statusMap[status] : "Не известно";
   };
   const renderCommonChats = (userId: string) => {
     const userChats = commonChats.find((chat) => chat.userId === userId);
@@ -464,12 +464,21 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                   {participant.firstName} {participant.lastName}
                                 </span>
                                 <span className={s.dialogueParticipants}>
-                                  @{participant.username} |{" "}
+                                  @{participant.username}
+                                </span>
+                                <span>
+                                  Статус:{" "}
                                   {participant.status.className
                                     ? getUserStatus(
                                         participant.status.className
                                       )
                                     : "Не известно"}
+                                </span>
+                                <span>
+                                  Телефон:{" "}
+                                  {participant.phone
+                                    ? participant.phone
+                                    : "Скрыт"}
                                 </span>
                               </div>
                             )}
