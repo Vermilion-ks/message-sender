@@ -254,7 +254,6 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     //@ts-ignore
     //console.log(result.users[0]);
 
-    // Приведение типов и проверка наличия свойства `title`
     let chatTitle = "";
     if ("title" in entity) {
       const chat = entity as { title: string };

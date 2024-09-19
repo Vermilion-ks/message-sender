@@ -48,10 +48,10 @@ const AddingTodo: FC<AddingTodoProps> = ({ userId, onClose, onTodoAdded }) => {
       })
       .catch((err: Error) => {
         console.log(err);
-        toast.error("Ошибка отправки кода", {
-          className: t.customToast,
-          bodyClassName: t.customToastBody,
-        });
+        // toast.error("Ошибка отправки кода", {
+        //   className: t.customToast,
+        //   bodyClassName: t.customToastBody,
+        // });
       })
       .finally(() => {
         setLoading(false);

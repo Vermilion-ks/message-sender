@@ -250,7 +250,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Ошибка отправки сообщения");
+        //toast.error("Ошибка отправки сообщения");
       });
   };
 
@@ -468,13 +468,13 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
                                 </span>
                                 <span className={s.dialogueParticipants}>
                                   Статус:{" "}
-                                  {participant.status.className
+                                  {participant?.status?.className
                                     ? getUserStatus(
                                         participant.status.className
                                       )
                                     : "Не известно"}{" "}
                                   | Телефон:{" "}
-                                  {participant.phone
+                                  {participant?.phone
                                     ? participant.phone
                                     : "Скрыт"}
                                 </span>
