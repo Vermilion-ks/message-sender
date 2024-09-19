@@ -273,8 +273,7 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
     setExpandedParticipant(expandedParticipant === id ? null : id);
   };
 
-  const getUserStatus = (status: string) => {
-    console.log(status);
+  const getUserStatus = (status: string | null) => {
     const statusMap: { [key: string]: string } = {
       UserStatusRecently: "Был(а) недавно",
       UserStatusLastWeek: "Был(а) на прошлой неделе",
@@ -284,7 +283,8 @@ const TodoList: FC<TodoListProps> = ({ user, setLoginUser }: TodoListProps) => {
       UserStatusEmpty: "Empty",
     };
 
-    return status ? statusMap[status] : "Не известно";
+    // Если статус отсутствует или не найден в карте, вернется "Не известно"
+    return statusMap[status ?? ""] || "Не известно";
   };
   const renderCommonChats = (userId: string) => {
     const userChats = commonChats.find((chat) => chat.userId === userId);
