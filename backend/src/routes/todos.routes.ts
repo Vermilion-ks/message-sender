@@ -697,7 +697,7 @@ todoRoutes
 
     if (!sessions[phone]) {
       return response
-        .status(400)
+        .status(200)
         .json({ error: "Session not found for this phone number" });
     }
 
@@ -743,15 +743,12 @@ todoRoutes
     } catch (error) {
       if (error instanceof FloodWaitError) {
         const waitTime = error.seconds;
-        console.error(
-          `Flood wait error: Wait ${waitTime} seconds before retrying.`
-        );
-        return response.status(429).json({
+        return response.status(200).json({
           error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
         });
       } else {
         console.error("Error validating code:", error);
-        response.status(400).json({ error: "Invalid code" });
+        response.status(200).json({ error: "Invalid code" });
       }
     }
   });
