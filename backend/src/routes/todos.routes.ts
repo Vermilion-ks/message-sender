@@ -741,8 +741,18 @@ todoRoutes
         firstName,
       });
     } catch (error) {
-      //console.error("Error validating code:", error);
-      response.status(400).json({ error: "Invalid code" });
+      if (error instanceof FloodWaitError) {
+        const waitTime = error.seconds;
+        console.error(
+          `Flood wait error: Wait ${waitTime} seconds before retrying.`
+        );
+        return response.status(429).json({
+          error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
+        });
+      } else {
+        console.error("Error validating code:", error);
+        response.status(400).json({ error: "Invalid code" });
+      }
     }
   });
 
