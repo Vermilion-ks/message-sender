@@ -697,7 +697,7 @@ todoRoutes
 
     if (!sessions[phone]) {
       return response
-        .status(200)
+        .status(400)
         .json({ error: "Session not found for this phone number" });
     }
 
@@ -705,10 +705,10 @@ todoRoutes
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       useIPV6: false,
       timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: false,
+      requestRetries: 1,
+      connectionRetries: 1,
+      retryDelay: 30000,
+      autoReconnect: false, // Отключаем автопереподключение
     });
 
     try {
@@ -741,8 +741,28 @@ todoRoutes
         firstName,
       });
     } catch (error) {
-      if (error instanceof RPCError && error.errorMessage === "FLOOD") {
+      if (error instanceof FloodWaitError) {
+        const waitTime = error.seconds;
+        console.error(
+          `Flood wait error: Please wait ${waitTime} seconds before retrying.`
+        );
+
+        // Закрываем соединение и останавливаем любые повторные запросы
+        await client.disconnect();
+
+        return response.status(429).json({
+          error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
+        });
+      } else if (error instanceof RPCError && error.errorMessage === "FLOOD") {
+        console.error("FLOOD error occurred");
+        await client.disconnect(); // Останавливаем клиента
         return response.status(400).json({ error: "FLOOD error" });
+      } else {
+        console.error("Error validating code:", error);
+        await client.disconnect(); // Останавливаем клиента при любой другой ошибке
+        return response
+          .status(400)
+          .json({ error: "Invalid code or other error" });
       }
     }
   });
