@@ -741,7 +741,7 @@ todoRoutes
         firstName,
       });
     } catch (error) {
-      console.error("Error validating code:", error);
+      //console.error("Error validating code:", error);
       response.status(400).json({ error: "Invalid code" });
     }
   });
