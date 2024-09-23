@@ -708,7 +708,7 @@ todoRoutes
       requestRetries: 5,
       connectionRetries: 5,
       retryDelay: 1000,
-      autoReconnect: true,
+      autoReconnect: false,
     });
 
     try {
