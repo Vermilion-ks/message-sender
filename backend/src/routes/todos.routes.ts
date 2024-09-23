@@ -69,26 +69,32 @@ const downloadAndSavePhoto = async (client: TelegramClient, dialog: any) => {
   }
 };
 
+// Функция для создания клиента Telegram
+function createTelegramClient(session: string): TelegramClient {
+  const stringSession = new StringSession(session);
+  return new TelegramClient(stringSession, apiId, apiHash, {
+    useIPV6: false,
+    timeout: 60,
+    requestRetries: 5,
+    connectionRetries: 5,
+    retryDelay: 1000,
+    autoReconnect: true,
+    maxConcurrentDownloads: 5,
+    securityChecks: true,
+    appVersion: "1.0",
+    langCode: "en",
+    systemLangCode: "en",
+    useWSS: false,
+  });
+}
+
 todoRoutes
   .route("/send-code")
   .post(async (request: Request, response: Response) => {
     const { phone } = request.body;
 
+    const client = await createTelegramClient(sessionString);
     const stringSession = new StringSession(sessionString);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
-    });
 
     try {
       await client.connect();
@@ -123,9 +129,11 @@ todoRoutes
         response.status(429).json({
           error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
         });
+        return;
       } else {
         console.error(error);
         response.status(400).json({ error: "Failed to send code" });
+        return;
       }
     }
   });
@@ -576,36 +584,36 @@ todoRoutes
       };
 
       // Получение списка фотографий пользователя
-      const photos = await client.invoke(
-        new Api.photos.GetUserPhotos({
-          userId: userId,
-          offset: 0,
-          maxId: bigInt(0),
-          limit: 1,
-        })
-      );
+      // const photos = await client.invoke(
+      //   new Api.photos.GetUserPhotos({
+      //     userId: userId,
+      //     offset: 0,
+      //     maxId: bigInt(0),
+      //     limit: 1,
+      //   })
+      // );
 
-      if (photos.photos.length === 0) {
-        return response.status(404).json({ error: "No photos found" });
-      }
+      // if (photos.photos.length === 0) {
+      //   return response.status(404).json({ error: "No photos found" });
+      // }
 
-      const filePath = path.resolve(
-        __dirname,
-        "../images/pictures/",
-        user.phone + ".png"
-      );
-      try {
-        const buffer = await client.downloadProfilePhoto(user);
-        if (buffer instanceof Buffer) {
-          await saveFile(filePath, buffer);
-        } else {
-          console.error(
-            `Failed to download photo: returned value is not a Buffer`
-          );
-        }
-      } catch (err) {
-        console.error(`Failed to download or save photo: ${err}`);
-      }
+      // const filePath = path.resolve(
+      //   __dirname,
+      //   "../images/pictures/",
+      //   user.phone + ".png"
+      // );
+      // try {
+      //   const buffer = await client.downloadProfilePhoto(user);
+      //   if (buffer instanceof Buffer) {
+      //     await saveFile(filePath, buffer);
+      //   } else {
+      //     console.error(
+      //       `Failed to download photo: returned value is not a Buffer`
+      //     );
+      //   }
+      // } catch (err) {
+      //   console.error(`Failed to download or save photo: ${err}`);
+      // }
 
       response.status(200).json({
         message: "Code validated successfully",
