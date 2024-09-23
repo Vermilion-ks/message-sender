@@ -741,6 +741,7 @@ todoRoutes
         firstName,
       });
     } catch (error) {
+      await client.disconnect();
       if (error instanceof FloodWaitError) {
         const waitTime = error.seconds;
         console.error(
