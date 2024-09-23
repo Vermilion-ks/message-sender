@@ -69,74 +69,66 @@ const downloadAndSavePhoto = async (client: TelegramClient, dialog: any) => {
   }
 };
 
-// Функция для создания клиента Telegram
-async function createTelegramClient(session: string): Promise<TelegramClient> {
-  const stringSession = new StringSession(session);
-  return new TelegramClient(stringSession, apiId, apiHash, {
-    useIPV6: false,
-    timeout: 60,
-    requestRetries: 5,
-    connectionRetries: 5,
-    retryDelay: 1000,
-    autoReconnect: true,
-    maxConcurrentDownloads: 5,
-    securityChecks: true,
-    appVersion: "1.0",
-    langCode: "en",
-    systemLangCode: "en",
-    useWSS: false,
+todoRoutes
+  .route("/send-code")
+  .post(async (request: Request, response: Response) => {
+    const { phone } = request.body;
+
+    const stringSession = new StringSession(sessionString);
+    const client = new TelegramClient(stringSession, apiId, apiHash, {
+      useIPV6: false, // Если нужно использовать IPv6
+      timeout: 60, // Таймаут в секундах, если нужен
+      requestRetries: 5, // Количество попыток повторного запроса
+      connectionRetries: 5, // Количество попыток повторного подключения
+      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
+      autoReconnect: true, // Автоматическое переподключение
+      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
+      securityChecks: true, // Проверка на подделку сообщений
+      appVersion: "1.0", // Версия приложения
+      langCode: "en", // Код языка
+      systemLangCode: "en", // Системный код языка
+      useWSS: false, // Использовать WSS (или порт 443)
+    });
+
+    try {
+      await client.connect();
+      const result = await client.invoke(
+        new Api.auth.SendCode({
+          phoneNumber: phone,
+          apiId: apiId,
+          apiHash: apiHash,
+          settings: new Api.CodeSettings({
+            allowFlashcall: true,
+            currentNumber: true,
+            allowAppHash: true,
+            allowMissedCall: true,
+          }),
+        })
+      );
+
+      // Сохранение состояния сессии
+      sessions[phone] = {
+        session: stringSession.save(),
+        firstName: "",
+        lastName: "",
+      };
+
+      response.status(200).json({ message: "Code sent successfully", result });
+    } catch (error) {
+      if (error instanceof FloodWaitError) {
+        const waitTime = error.seconds;
+        console.error(
+          `Flood wait error: Please wait ${waitTime} seconds before retrying.`
+        );
+        response.status(429).json({
+          error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
+        });
+      } else {
+        console.error(error);
+        response.status(400).json({ error: "Failed to send code" });
+      }
+    }
   });
-}
-
-// todoRoutes
-//   .route("/send-code")
-//   .post(async (request: Request, response: Response) => {
-//     const { phone } = request.body;
-
-//     const client = await createTelegramClient(sessionString);
-//     const stringSession = new StringSession(sessionString);
-
-//     try {
-//       await client.connect();
-//       const result = await client.invoke(
-//         new Api.auth.SendCode({
-//           phoneNumber: phone,
-//           apiId: apiId,
-//           apiHash: apiHash,
-//           settings: new Api.CodeSettings({
-//             allowFlashcall: true,
-//             currentNumber: true,
-//             allowAppHash: true,
-//             allowMissedCall: true,
-//           }),
-//         })
-//       );
-
-//       // Сохранение состояния сессии
-//       sessions[phone] = {
-//         session: stringSession.save(),
-//         firstName: "",
-//         lastName: "",
-//       };
-//       console.log("code sended", sessions);
-//       response.status(200).json({ message: "Code sent successfully", result });
-//     } catch (error) {
-//       if (error instanceof FloodWaitError) {
-//         const waitTime = error.seconds;
-//         console.error(
-//           `Flood wait error: Please wait ${waitTime} seconds before retrying.`
-//         );
-//         response.status(429).json({
-//           error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
-//         });
-//         return;
-//       } else {
-//         console.error(error);
-//         response.status(400).json({ error: "Failed to send code" });
-//         return;
-//       }
-//     }
-//   });
 
 todoRoutes
   .route("/activate-session/:phone")
@@ -536,161 +528,6 @@ todoRoutes
     }
   });
 
-// todoRoutes
-//   .route("/validate-code")
-//   .post(async (request: Request, response: Response) => {
-//     const { phone, code, password } = request.body;
-
-//     if (!sessions[phone]) {
-//       return response
-//         .status(400)
-//         .json({ error: "Session not found for this phone number" });
-//     }
-
-//     const stringSession = new StringSession(sessions[phone].session);
-//     const client = await createTelegramClient(sessionString);
-//     // const client = new TelegramClient(stringSession, apiId, apiHash, {
-//     //   useIPV6: false, // Если нужно использовать IPv6
-//     //   timeout: 60, // Таймаут в секундах, если нужен
-//     //   requestRetries: 5, // Количество попыток повторного запроса
-//     //   connectionRetries: 5, // Количество попыток повторного подключения
-//     //   retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-//     //   autoReconnect: true, // Автоматическое переподключение
-//     //   maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-//     //   securityChecks: true, // Проверка на подделку сообщений
-//     //   appVersion: "1.0", // Версия приложения
-//     //   langCode: "en", // Код языка
-//     //   systemLangCode: "en", // Системный код языка
-//     //   useWSS: false, // Использовать WSS (или порт 443)
-//     // });
-
-//     try {
-//       await client.start({
-//         phoneNumber: () => phone,
-//         phoneCode: () => code,
-//         password: password ? () => password : undefined,
-//         onError: (err: any) => console.error(err),
-//       });
-
-//       const user = await client.getMe();
-//       console.log("user:", user);
-//       const userId = user.id;
-//       const userPhone = user.phone;
-//       const firstName = user.firstName ?? "";
-//       const lastName = user.lastName ?? "";
-
-//       sessions[phone] = {
-//         session: sessions[phone].session,
-//         firstName: firstName,
-//         lastName: lastName,
-//       };
-//       console.log("sessions:", sessions);
-//       // Получение списка фотографий пользователя
-//       // const photos = await client.invoke(
-//       //   new Api.photos.GetUserPhotos({
-//       //     userId: userId,
-//       //     offset: 0,
-//       //     maxId: bigInt(0),
-//       //     limit: 1,
-//       //   })
-//       // );
-
-//       // if (photos.photos.length === 0) {
-//       //   return response.status(404).json({ error: "No photos found" });
-//       // }
-
-//       // const filePath = path.resolve(
-//       //   __dirname,
-//       //   "../images/pictures/",
-//       //   user.phone + ".png"
-//       // );
-//       // try {
-//       //   const buffer = await client.downloadProfilePhoto(user);
-//       //   if (buffer instanceof Buffer) {
-//       //     await saveFile(filePath, buffer);
-//       //   } else {
-//       //     console.error(
-//       //       `Failed to download photo: returned value is not a Buffer`
-//       //     );
-//       //   }
-//       // } catch (err) {
-//       //   console.error(`Failed to download or save photo: ${err}`);
-//       // }
-
-//       response.status(200).json({
-//         message: "Code validated successfully",
-//         userId,
-//         userPhone,
-//         firstName,
-//       });
-//     } catch (error) {
-//       console.error("Error validating code:", error);
-//       response.status(400).json({ error: "Invalid code" });
-//     }
-//   });
-
-todoRoutes
-  .route("/send-code")
-  .post(async (request: Request, response: Response) => {
-    const { phone } = request.body;
-
-    if (sessions[phone]) {
-      return response.status(400).json({ error: "Code already sent" });
-    }
-
-    const stringSession = new StringSession("");
-
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: true,
-    });
-
-    try {
-      await client.connect();
-
-      const result = await client.invoke(
-        new Api.auth.SendCode({
-          phoneNumber: phone,
-          apiId: apiId,
-          apiHash: apiHash,
-          settings: new Api.CodeSettings({
-            allowFlashcall: true,
-            currentNumber: true,
-            allowAppHash: true,
-            allowMissedCall: true,
-          }),
-        })
-      );
-
-      // Сохранение сессии
-      sessions[phone] = {
-        session: stringSession.save(),
-        firstName: "",
-        lastName: "",
-      };
-
-      console.log("Code sent", sessions);
-      response.status(200).json({ message: "Code sent successfully", result });
-    } catch (error) {
-      if (error instanceof FloodWaitError) {
-        const waitTime = error.seconds;
-        console.error(
-          `Flood wait error: Wait ${waitTime} seconds before retrying.`
-        );
-        return response.status(429).json({
-          error: `Flood wait error: Wait ${waitTime} seconds before retrying.`,
-        });
-      } else {
-        console.error("Error sending code:", error);
-        return response.status(400).json({ error: "Failed to send code" });
-      }
-    }
-  });
-
 todoRoutes
   .route("/validate-code")
   .post(async (request: Request, response: Response) => {
@@ -704,13 +541,20 @@ todoRoutes
 
     const stringSession = new StringSession(sessions[phone].session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 3,
-      connectionRetries: 3,
-      retryDelay: 1000,
-      autoReconnect: true, // Отключаем автопереподключение
+      useIPV6: false, // Если нужно использовать IPv6
+      timeout: 60, // Таймаут в секундах, если нужен
+      requestRetries: 5, // Количество попыток повторного запроса
+      connectionRetries: 5, // Количество попыток повторного подключения
+      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
+      autoReconnect: true, // Автоматическое переподключение
+      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
+      securityChecks: true, // Проверка на подделку сообщений
+      appVersion: "1.0", // Версия приложения
+      langCode: "en", // Код языка
+      systemLangCode: "en", // Системный код языка
+      useWSS: false, // Использовать WSS (или порт 443)
     });
+
     try {
       await client.start({
         phoneNumber: () => phone,
@@ -725,14 +569,43 @@ todoRoutes
       const firstName = user.firstName ?? "";
       const lastName = user.lastName ?? "";
 
-      // Обновление сессии с именем пользователя
       sessions[phone] = {
         session: sessions[phone].session,
         firstName: firstName,
         lastName: lastName,
       };
 
-      console.log("User validated:", user);
+      // Получение списка фотографий пользователя
+      const photos = await client.invoke(
+        new Api.photos.GetUserPhotos({
+          userId: userId,
+          offset: 0,
+          maxId: bigInt(0),
+          limit: 1,
+        })
+      );
+
+      if (photos.photos.length === 0) {
+        return response.status(404).json({ error: "No photos found" });
+      }
+
+      const filePath = path.resolve(
+        __dirname,
+        "../images/pictures/",
+        user.phone + ".png"
+      );
+      try {
+        const buffer = await client.downloadProfilePhoto(user);
+        if (buffer instanceof Buffer) {
+          await saveFile(filePath, buffer);
+        } else {
+          console.error(
+            `Failed to download photo: returned value is not a Buffer`
+          );
+        }
+      } catch (err) {
+        console.error(`Failed to download or save photo: ${err}`);
+      }
 
       response.status(200).json({
         message: "Code validated successfully",
@@ -741,30 +614,8 @@ todoRoutes
         firstName,
       });
     } catch (error) {
-      await client.disconnect();
-      if (error instanceof FloodWaitError) {
-        const waitTime = error.seconds;
-        console.error(
-          `Flood wait error: Please wait ${waitTime} seconds before retrying.`
-        );
-
-        // Закрываем соединение и останавливаем любые повторные запросы
-        await client.disconnect();
-
-        return response.status(429).json({
-          error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
-        });
-      } else if (error instanceof RPCError && error.errorMessage === "FLOOD") {
-        console.error("FLOOD error occurred");
-        await client.disconnect(); // Останавливаем клиента
-        return response.status(400).json({ error: "FLOOD error" });
-      } else {
-        console.error("Error validating code:", error);
-        await client.disconnect(); // Останавливаем клиента при любой другой ошибке
-        return response
-          .status(400)
-          .json({ error: "Invalid code or other error" });
-      }
+      console.error("Error validating code:", error);
+      response.status(400).json({ error: "Invalid code" });
     }
   });
 
