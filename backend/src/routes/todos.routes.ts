@@ -118,7 +118,7 @@ todoRoutes
         firstName: "",
         lastName: "",
       };
-
+      console.log("code sended", sessions);
       response.status(200).json({ message: "Code sent successfully", result });
     } catch (error) {
       if (error instanceof FloodWaitError) {
