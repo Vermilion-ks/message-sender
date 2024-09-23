@@ -741,14 +741,8 @@ todoRoutes
         firstName,
       });
     } catch (error) {
-      if (error instanceof FloodWaitError) {
-        const waitTime = error.seconds;
-        return response.status(200).json({
-          error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
-        });
-      } else {
-        console.error("Error validating code:", error);
-        response.status(200).json({ error: "Invalid code" });
+      if (error instanceof RPCError && error.errorMessage === "FLOOD") {
+        return response.status(400).json({ error: "FLOOD error" });
       }
     }
   });
