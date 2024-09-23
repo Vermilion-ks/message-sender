@@ -705,10 +705,10 @@ todoRoutes
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       useIPV6: false,
       timeout: 60,
-      requestRetries: 1,
-      connectionRetries: 1,
-      retryDelay: 30000,
-      autoReconnect: false, // Отключаем автопереподключение
+      requestRetries: 3,
+      connectionRetries: 3,
+      retryDelay: 1000,
+      autoReconnect: true, // Отключаем автопереподключение
     });
     try {
       await client.start({
