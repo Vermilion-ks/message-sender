@@ -715,10 +715,7 @@ todoRoutes
         phoneNumber: () => phone,
         phoneCode: () => code,
         password: password ? () => password : undefined,
-        onError: (err: any) => {
-          console.error(err);
-          return;
-        },
+        onError: (err: any) => console.error(err),
       });
 
       const user = await client.getMe();
