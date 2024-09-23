@@ -638,7 +638,8 @@ todoRoutes
       return response.status(400).json({ error: "Code already sent" });
     }
 
-    const stringSession = new StringSession(""); // Начальная пустая сессия
+    const stringSession = new StringSession("");
+
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       useIPV6: false,
       timeout: 60,
