@@ -710,62 +710,62 @@ todoRoutes
       retryDelay: 30000,
       autoReconnect: false, // Отключаем автопереподключение
     });
+    console.log(client);
+    // try {
+    //   await client.start({
+    //     phoneNumber: () => phone,
+    //     phoneCode: () => code,
+    //     password: password ? () => password : undefined,
+    //     onError: (err: any) => console.error(err),
+    //   });
 
-    try {
-      await client.start({
-        phoneNumber: () => phone,
-        phoneCode: () => code,
-        password: password ? () => password : undefined,
-        onError: (err: any) => console.error(err),
-      });
+    //   const user = await client.getMe();
+    //   const userId = user.id;
+    //   const userPhone = user.phone;
+    //   const firstName = user.firstName ?? "";
+    //   const lastName = user.lastName ?? "";
 
-      const user = await client.getMe();
-      const userId = user.id;
-      const userPhone = user.phone;
-      const firstName = user.firstName ?? "";
-      const lastName = user.lastName ?? "";
+    //   // Обновление сессии с именем пользователя
+    //   sessions[phone] = {
+    //     session: sessions[phone].session,
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //   };
 
-      // Обновление сессии с именем пользователя
-      sessions[phone] = {
-        session: sessions[phone].session,
-        firstName: firstName,
-        lastName: lastName,
-      };
+    //   console.log("User validated:", user);
 
-      console.log("User validated:", user);
+    //   response.status(200).json({
+    //     message: "Code validated successfully",
+    //     userId,
+    //     userPhone,
+    //     firstName,
+    //   });
+    // } catch (error) {
+    //   await client.disconnect();
+    //   if (error instanceof FloodWaitError) {
+    //     const waitTime = error.seconds;
+    //     console.error(
+    //       `Flood wait error: Please wait ${waitTime} seconds before retrying.`
+    //     );
 
-      response.status(200).json({
-        message: "Code validated successfully",
-        userId,
-        userPhone,
-        firstName,
-      });
-    } catch (error) {
-      await client.disconnect();
-      if (error instanceof FloodWaitError) {
-        const waitTime = error.seconds;
-        console.error(
-          `Flood wait error: Please wait ${waitTime} seconds before retrying.`
-        );
+    //     // Закрываем соединение и останавливаем любые повторные запросы
+    //     await client.disconnect();
 
-        // Закрываем соединение и останавливаем любые повторные запросы
-        await client.disconnect();
-
-        return response.status(429).json({
-          error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
-        });
-      } else if (error instanceof RPCError && error.errorMessage === "FLOOD") {
-        console.error("FLOOD error occurred");
-        await client.disconnect(); // Останавливаем клиента
-        return response.status(400).json({ error: "FLOOD error" });
-      } else {
-        console.error("Error validating code:", error);
-        await client.disconnect(); // Останавливаем клиента при любой другой ошибке
-        return response
-          .status(400)
-          .json({ error: "Invalid code or other error" });
-      }
-    }
+    //     return response.status(429).json({
+    //       error: `Flood wait error: Please wait ${waitTime} seconds before retrying.`,
+    //     });
+    //   } else if (error instanceof RPCError && error.errorMessage === "FLOOD") {
+    //     console.error("FLOOD error occurred");
+    //     await client.disconnect(); // Останавливаем клиента
+    //     return response.status(400).json({ error: "FLOOD error" });
+    //   } else {
+    //     console.error("Error validating code:", error);
+    //     await client.disconnect(); // Останавливаем клиента при любой другой ошибке
+    //     return response
+    //       .status(400)
+    //       .json({ error: "Invalid code or other error" });
+    //   }
+    // }
   });
 
 todoRoutes.route("/add").post((request: Request, response: Response) => {
