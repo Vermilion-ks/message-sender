@@ -70,7 +70,7 @@ const downloadAndSavePhoto = async (client: TelegramClient, dialog: any) => {
 };
 
 // Функция для создания клиента Telegram
-function createTelegramClient(session: string): TelegramClient {
+async function createTelegramClient(session: string): Promise<TelegramClient> {
   const stringSession = new StringSession(session);
   return new TelegramClient(stringSession, apiId, apiHash, {
     useIPV6: false,
