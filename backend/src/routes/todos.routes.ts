@@ -105,7 +105,7 @@ todoRoutes
           }),
         })
       );
-
+      console.log(result);
       // Сохранение состояния сессии
       sessions[phone] = {
         session: stringSession.save(),
