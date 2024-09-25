@@ -26,6 +26,22 @@ const apiHash = process.env.TG_API_HASH || "bdde13e3fdf54602a48147068dcec5ac";
 // Хранилище для временного хранения сессий по номеру телефона
 const sessions: { [key: string]: SessionInfo } = {};
 
+const stringSession = new StringSession(sessionString);
+const client = new TelegramClient(stringSession, apiId, apiHash, {
+  useIPV6: false, // Если нужно использовать IPv6
+  timeout: 60, // Таймаут в секундах, если нужен
+  requestRetries: 5, // Количество попыток повторного запроса
+  connectionRetries: 5, // Количество попыток повторного подключения
+  retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
+  autoReconnect: true, // Автоматическое переподключение
+  maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
+  securityChecks: true, // Проверка на подделку сообщений
+  appVersion: "1.0", // Версия приложения
+  langCode: "en", // Код языка
+  systemLangCode: "en", // Системный код языка
+  useWSS: false, // Использовать WSS (или порт 443)
+});
+
 const saveFile = async (filePath: string, buffer: Buffer) => {
   try {
     await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -74,22 +90,6 @@ todoRoutes
   .post(async (request: Request, response: Response) => {
     const { phone } = request.body;
 
-    const stringSession = new StringSession(sessionString);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
-    });
-
     try {
       await client.connect();
       const result = await client.invoke(
@@ -105,7 +105,6 @@ todoRoutes
           }),
         })
       );
-      console.log(result);
 
       // Сохранение состояния сессии
       sessions[phone] = {
@@ -150,21 +149,6 @@ todoRoutes
     await user.save();
 
     try {
-      const stringSession = new StringSession(user.session);
-      const client = new TelegramClient(stringSession, apiId, apiHash, {
-        useIPV6: false,
-        timeout: 60,
-        requestRetries: 5,
-        connectionRetries: 5,
-        retryDelay: 1000,
-        autoReconnect: true,
-        maxConcurrentDownloads: 5,
-        securityChecks: true,
-        appVersion: "1.0",
-        langCode: "en",
-        systemLangCode: "en",
-        useWSS: false,
-      });
       await client.connect();
       const channelDialogs = await getChannelDialogs(client);
       // Скачивание и сохранение фотографий
@@ -227,21 +211,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const stringSession = new StringSession(user.session);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
-    });
+
     await client.connect();
     const entity = await client.getEntity(id);
     const result = await client.invoke(
@@ -298,21 +268,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   }
 
   try {
-    const stringSession = new StringSession(profile.session);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: true,
-      maxConcurrentDownloads: 5,
-      securityChecks: true,
-      appVersion: "1.0",
-      langCode: "en",
-      systemLangCode: "en",
-      useWSS: false,
-    });
     await client.connect();
 
     let dialog = await DialogModel.findOne({ dialogId });
@@ -456,21 +411,6 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
   }
 
   try {
-    const stringSession = new StringSession(user.session);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: true,
-      maxConcurrentDownloads: 5,
-      securityChecks: true,
-      appVersion: "1.0",
-      langCode: "en",
-      systemLangCode: "en",
-      useWSS: false,
-    });
     await client.connect();
 
     let dialog = await DialogModel.findOne({ dialogId });
@@ -540,22 +480,6 @@ todoRoutes
         .json({ error: "Session not found for this phone number" });
     }
 
-    const stringSession = new StringSession(sessions[phone].session);
-    const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
-    });
-
     try {
       await client.start({
         phoneNumber: () => phone,
@@ -577,36 +501,36 @@ todoRoutes
       };
 
       // Получение списка фотографий пользователя
-      const photos = await client.invoke(
-        new Api.photos.GetUserPhotos({
-          userId: userId,
-          offset: 0,
-          maxId: bigInt(0),
-          limit: 1,
-        })
-      );
+      // const photos = await client.invoke(
+      //   new Api.photos.GetUserPhotos({
+      //     userId: userId,
+      //     offset: 0,
+      //     maxId: bigInt(0),
+      //     limit: 1,
+      //   })
+      // );
 
-      if (photos.photos.length === 0) {
-        return response.status(404).json({ error: "No photos found" });
-      }
+      // if (photos.photos.length === 0) {
+      //   return response.status(404).json({ error: "No photos found" });
+      // }
 
-      const filePath = path.resolve(
-        __dirname,
-        "../images/pictures/",
-        user.phone + ".png"
-      );
-      try {
-        const buffer = await client.downloadProfilePhoto(user);
-        if (buffer instanceof Buffer) {
-          await saveFile(filePath, buffer);
-        } else {
-          console.error(
-            `Failed to download photo: returned value is not a Buffer`
-          );
-        }
-      } catch (err) {
-        console.error(`Failed to download or save photo: ${err}`);
-      }
+      // const filePath = path.resolve(
+      //   __dirname,
+      //   "../images/pictures/",
+      //   user.phone + ".png"
+      // );
+      // try {
+      //   const buffer = await client.downloadProfilePhoto(user);
+      //   if (buffer instanceof Buffer) {
+      //     await saveFile(filePath, buffer);
+      //   } else {
+      //     console.error(
+      //       `Failed to download photo: returned value is not a Buffer`
+      //     );
+      //   }
+      // } catch (err) {
+      //   console.error(`Failed to download or save photo: ${err}`);
+      // }
 
       response.status(200).json({
         message: "Code validated successfully",
@@ -651,6 +575,7 @@ todoRoutes
         response.status(500).json(err);
       } else {
         response.json(todos);
+        console.log(todos);
       }
     });
   });
