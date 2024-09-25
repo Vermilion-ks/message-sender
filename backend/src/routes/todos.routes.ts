@@ -165,15 +165,15 @@ todoRoutes
         useWSS: false,
       });
       await client.connect();
-      const me = await client.getMe();
-      const result = await client.invoke(
-        new Api.messages.SendMessage({
-          peer: bigInt(-1),
-          message: "test", // Пустое сообщение
-          randomId: bigInt(-1), // Случайный ID для предотвращения отправки
-        })
-      );
-      console.log(result);
+      // const me = await client.getMe();
+      // const result = await client.invoke(
+      //   new Api.messages.SendMessage({
+      //     peer: me.id,
+      //     message: "", // Пустое сообщение
+      //     randomId: bigInt(-1), // Случайный ID для предотвращения отправки
+      //   })
+      // );
+      // console.log(result)
 
       const channelDialogs = await getChannelDialogs(client);
       // Скачивание и сохранение фотографий
