@@ -568,28 +568,29 @@ todoRoutes.route("/add").post((request: Request, response: Response) => {
 
 todoRoutes
   .route("/user/:userId")
-  .get((request: Request, response: Response) => {
-    TodoModel.find({ userId: request.params.userId }, (err: any, todos) => {
-      if (err) {
-        console.error(err);
-        response.status(500).json(err);
-      } else {
-        todos.forEach(async (profile) => {
-          const photos = await client.invoke(
-            new Api.photos.GetUserPhotos({
-              userId: profile.userId,
-              offset: 0,
-              maxId: bigInt(0),
-              limit: 1,
-            })
-          );
-          console.log(photos);
-        });
+  .get(async (request: Request, response: Response) => {
+    try {
+      await client.connect();
 
-        response.json(todos);
-        //console.log(todos);
+      const todos = await TodoModel.find({ userId: request.params.userId });
+
+      for (const profile of todos) {
+        const photos = await client.invoke(
+          new Api.photos.GetUserPhotos({
+            userId: profile.userId,
+            offset: 0,
+            maxId: bigInt(0), // Используйте BigInt в TypeScript
+            limit: 1,
+          })
+        );
+        console.log(photos);
       }
-    });
+
+      response.json(todos);
+    } catch (err) {
+      console.error(err);
+      response.status(500).json(err);
+    }
   });
 
 todoRoutes.route("/:id").get((request: Request, response: Response) => {
