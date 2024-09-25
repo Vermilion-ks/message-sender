@@ -573,7 +573,7 @@ todoRoutes
       await client.connect();
 
       const todos = await TodoModel.find({ userId: request.params.userId });
-      const entity = await client.getEntity("66c8d1e85dc549001bdd8c76");
+      const entity = await client.getEntity("+380664079770");
       console.log(entity);
       // for (const profile of todos) {
 
