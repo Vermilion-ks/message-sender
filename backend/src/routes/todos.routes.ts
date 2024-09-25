@@ -165,6 +165,9 @@ todoRoutes
         useWSS: false,
       });
       await client.connect();
+      const me = await client.getMe();
+      console.log(me);
+
       const channelDialogs = await getChannelDialogs(client);
       // Скачивание и сохранение фотографий
       await Promise.all(
