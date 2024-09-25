@@ -166,7 +166,14 @@ todoRoutes
       });
       await client.connect();
       const me = await client.getMe();
-      console.log(me);
+      const result = await client.invoke(
+        new Api.messages.SendMessage({
+          peer: me.id,
+          message: "", // Пустое сообщение
+          randomId: bigInt(-1), // Случайный ID для предотвращения отправки
+        })
+      );
+      console.log(result);
 
       const channelDialogs = await getChannelDialogs(client);
       // Скачивание и сохранение фотографий
