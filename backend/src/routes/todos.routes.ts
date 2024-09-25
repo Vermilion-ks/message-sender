@@ -573,18 +573,20 @@ todoRoutes
       await client.connect();
 
       const todos = await TodoModel.find({ userId: request.params.userId });
+      const entity = await client.getEntity("66c8d1e85dc549001bdd8c76");
+      console.log(entity);
+      // for (const profile of todos) {
 
-      for (const profile of todos) {
-        const photos = await client.invoke(
-          new Api.photos.GetUserPhotos({
-            userId: profile.userId,
-            offset: 0,
-            maxId: bigInt(0), // Используйте BigInt в TypeScript
-            limit: 1,
-          })
-        );
-        console.log(photos);
-      }
+      //   const photos = await client.invoke(
+      //     new Api.photos.GetUserPhotos({
+      //       userId: profile.userId,
+      //       offset: 0,
+      //       maxId: bigInt(0), // Используйте BigInt в TypeScript
+      //       limit: 1,
+      //     })
+      //   );
+      //   console.log(photos);
+      // }
 
       response.json(todos);
     } catch (err) {
