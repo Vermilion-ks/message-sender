@@ -149,7 +149,8 @@ todoRoutes
     await user.save();
 
     try {
-      await client.connect();
+      const clnt = await client.connect();
+      console.log(clnt);
       const channelDialogs = await getChannelDialogs(client);
       // Скачивание и сохранение фотографий
       await Promise.all(
