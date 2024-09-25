@@ -574,8 +574,20 @@ todoRoutes
         console.error(err);
         response.status(500).json(err);
       } else {
+        todos.forEach(async (profile) => {
+          const photos = await client.invoke(
+            new Api.photos.GetUserPhotos({
+              userId: profile.userId,
+              offset: 0,
+              maxId: bigInt(0),
+              limit: 1,
+            })
+          );
+          console.log(photos);
+        });
+
         response.json(todos);
-        console.log(todos);
+        //console.log(todos);
       }
     });
   });
