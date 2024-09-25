@@ -573,8 +573,8 @@ todoRoutes
       await client.connect();
 
       const todos = await TodoModel.find({ userId: request.params.userId });
-      const entity = await client.getEntity("+380664079770");
-      console.log(entity);
+      // const entity = await client.getEntity("+380664079770");
+      // console.log(entity);
       // for (const profile of todos) {
 
       //   const photos = await client.invoke(
