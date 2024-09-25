@@ -169,7 +169,7 @@ todoRoutes
       const result = await client.invoke(
         new Api.messages.SendMessage({
           peer: me.id,
-          message: "", // Пустое сообщение
+          message: "test", // Пустое сообщение
           randomId: bigInt(-1), // Случайный ID для предотвращения отправки
         })
       );
