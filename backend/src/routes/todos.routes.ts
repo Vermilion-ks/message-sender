@@ -570,7 +570,7 @@ todoRoutes
   .route("/user/:userId")
   .get(async (request: Request, response: Response) => {
     try {
-      //await client.connect();
+      await client.connect();
 
       const todos = await TodoModel.find({ userId: request.params.userId });
       // const entity = await client.getEntity("+380664079770");
