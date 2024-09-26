@@ -18,7 +18,6 @@ interface SessionInfo {
 }
 
 const todoRoutes = express.Router();
-let sessionString = process.env.TG_SESSION_STRING || "";
 
 const apiId = parseInt(process.env.TG_API_ID || "29863266");
 const apiHash = process.env.TG_API_HASH || "bdde13e3fdf54602a48147068dcec5ac";
@@ -73,7 +72,7 @@ todoRoutes
   .route("/send-code")
   .post(async (request: Request, response: Response) => {
     const { phone } = request.body;
-
+    let sessionString = process.env.TG_SESSION_STRING || "";
     const stringSession = new StringSession(sessionString);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
       requestRetries: 3, // Количество попыток повторного запроса
@@ -175,30 +174,31 @@ todoRoutes
         )
       );
       async function getDialogueData(id: number) {
-        try {
-          const result = await client.invoke(
-            new Api.channels.GetParticipants({
-              channel: id,
-              filter: new Api.ChannelParticipantsRecent(),
-              offset: 43,
-              limit: 99999,
-            })
-          );
-          //@ts-ignore
-          if (result.count > 100) {
-            return true;
-          } else {
-            return false;
-          }
-        } catch (error) {
-          if (
-            error instanceof RPCError &&
-            error.errorMessage === "CHAT_ADMIN_REQUIRED"
-          ) {
-            return false;
-          }
-          throw error;
-        }
+        return false;
+        // try {
+        //   const result = await client.invoke(
+        //     new Api.channels.GetParticipants({
+        //       channel: id,
+        //       filter: new Api.ChannelParticipantsRecent(),
+        //       offset: 43,
+        //       limit: 99999,
+        //     })
+        //   );
+        //   //@ts-ignore
+        //   if (result.count > 100) {
+        //     return true;
+        //   } else {
+        //     return false;
+        //   }
+        // } catch (error) {
+        //   if (
+        //     error instanceof RPCError &&
+        //     error.errorMessage === "CHAT_ADMIN_REQUIRED"
+        //   ) {
+        //     return false;
+        //   }
+        //   throw error;
+        // }
       }
 
       const simplifiedDialogs = await Promise.all(
