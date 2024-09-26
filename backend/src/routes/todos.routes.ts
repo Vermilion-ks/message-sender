@@ -76,18 +76,7 @@ todoRoutes
 
     const stringSession = new StringSession(sessionString);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
+      requestRetries: 3, // Количество попыток повторного запроса
     });
 
     try {
@@ -165,7 +154,7 @@ todoRoutes
         useWSS: false,
       });
       await client.connect();
-      // const me = await client.getMe();
+      const me = await client.getMe();
       // const result = await client.invoke(
       //   new Api.messages.SendMessage({
       //     peer: me.id,
@@ -174,6 +163,9 @@ todoRoutes
       //   })
       // );
       // console.log(result)
+      // const messages = await client.getMessages(me.id, {
+      //   limit: 1, // Получаем только одно сообщение
+      // });
 
       const channelDialogs = await getChannelDialogs(client);
       // Скачивание и сохранение фотографий
@@ -238,18 +230,7 @@ todoRoutes.route("/dialog-info").post(async (req: Request, res: Response) => {
     }
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
+      requestRetries: 3, // Количество попыток повторного запроса
     });
     await client.connect();
     const entity = await client.getEntity(id);
@@ -309,18 +290,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   try {
     const stringSession = new StringSession(profile.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: true,
-      maxConcurrentDownloads: 5,
-      securityChecks: true,
-      appVersion: "1.0",
-      langCode: "en",
-      systemLangCode: "en",
-      useWSS: false,
+      requestRetries: 3, // Количество попыток повторного запроса
     });
     await client.connect();
 
@@ -467,18 +437,7 @@ todoRoutes.route("/send-message").post(async (req: Request, res: Response) => {
   try {
     const stringSession = new StringSession(user.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false,
-      timeout: 60,
-      requestRetries: 5,
-      connectionRetries: 5,
-      retryDelay: 1000,
-      autoReconnect: true,
-      maxConcurrentDownloads: 5,
-      securityChecks: true,
-      appVersion: "1.0",
-      langCode: "en",
-      systemLangCode: "en",
-      useWSS: false,
+      requestRetries: 3, // Количество попыток повторного запроса
     });
     await client.connect();
 
@@ -551,18 +510,7 @@ todoRoutes
 
     const stringSession = new StringSession(sessions[phone].session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      useIPV6: false, // Если нужно использовать IPv6
-      timeout: 60, // Таймаут в секундах, если нужен
-      requestRetries: 5, // Количество попыток повторного запроса
-      connectionRetries: 5, // Количество попыток повторного подключения
-      retryDelay: 1000, // Задержка между попытками переподключения в миллисекундах
-      autoReconnect: true, // Автоматическое переподключение
-      maxConcurrentDownloads: 5, // Максимальное количество одновременных загрузок
-      securityChecks: true, // Проверка на подделку сообщений
-      appVersion: "1.0", // Версия приложения
-      langCode: "en", // Код языка
-      systemLangCode: "en", // Системный код языка
-      useWSS: false, // Использовать WSS (или порт 443)
+      requestRetries: 3, // Количество попыток повторного запроса
     });
 
     try {
