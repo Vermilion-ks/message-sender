@@ -174,31 +174,30 @@ todoRoutes
         )
       );
       async function getDialogueData(id: number) {
-        return false;
-        // try {
-        //   const result = await client.invoke(
-        //     new Api.channels.GetParticipants({
-        //       channel: id,
-        //       filter: new Api.ChannelParticipantsRecent(),
-        //       offset: 43,
-        //       limit: 99999,
-        //     })
-        //   );
-        //   //@ts-ignore
-        //   if (result.count > 100) {
-        //     return true;
-        //   } else {
-        //     return false;
-        //   }
-        // } catch (error) {
-        //   if (
-        //     error instanceof RPCError &&
-        //     error.errorMessage === "CHAT_ADMIN_REQUIRED"
-        //   ) {
-        //     return false;
-        //   }
-        //   throw error;
-        // }
+        try {
+          const result = await client.invoke(
+            new Api.channels.GetParticipants({
+              channel: id,
+              filter: new Api.ChannelParticipantsRecent(),
+              offset: 43,
+              limit: 99999,
+            })
+          );
+          //@ts-ignore
+          if (result.count > 100) {
+            return true;
+          } else {
+            return false;
+          }
+        } catch (error) {
+          if (
+            error instanceof RPCError &&
+            error.errorMessage === "CHAT_ADMIN_REQUIRED"
+          ) {
+            return false;
+          }
+          throw error;
+        }
       }
 
       const simplifiedDialogs = await Promise.all(
