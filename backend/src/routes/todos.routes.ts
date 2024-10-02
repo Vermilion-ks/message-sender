@@ -516,26 +516,32 @@ todoRoutes
         })
       );
 
-      if (photos.photos.length === 0) {
-        return response.status(404).json({ error: "No photos found" });
-      }
-
-      const filePath = path.resolve(
-        __dirname,
-        "../images/pictures/",
-        user.phone + ".png"
-      );
-      try {
-        const buffer = await client.downloadProfilePhoto(user);
-        if (buffer instanceof Buffer) {
-          await saveFile(filePath, buffer);
-        } else {
-          console.error(
-            `Failed to download photo: returned value is not a Buffer`
-          );
+      // Проверка наличия фотографий
+      if (photos.photos.length > 0) {
+        const filePath = path.resolve(
+          __dirname,
+          "../images/pictures/",
+          user.phone + ".png"
+        );
+        try {
+          // Проверка наличия фото профиля перед скачиванием
+          if (user.photo) {
+            const buffer = await client.downloadProfilePhoto(user);
+            if (buffer instanceof Buffer) {
+              await saveFile(filePath, buffer);
+            } else {
+              console.error(
+                `Failed to download photo: returned value is not a Buffer`
+              );
+            }
+          } else {
+            console.log(`User ${userId} does not have a profile photo.`);
+          }
+        } catch (err) {
+          console.error(`Failed to download or save photo: ${err}`);
         }
-      } catch (err) {
-        console.error(`Failed to download or save photo: ${err}`);
+      } else {
+        console.log("No photos found for this user.");
       }
 
       response.status(200).json({
