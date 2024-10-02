@@ -289,7 +289,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
   try {
     const stringSession = new StringSession(profile.session);
     const client = new TelegramClient(stringSession, apiId, apiHash, {
-      requestRetries: 3, // Количество попыток повторного запроса
+      requestRetries: 3,
     });
     await client.connect();
 
@@ -303,8 +303,6 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
     }
 
     const chat = await client.getEntity(dialogId);
-    //
-    //const participants = await client.getParticipants(chat);
     const participants = await client.invoke(
       new Api.channels.GetParticipants({
         channel: dialogId,
@@ -313,18 +311,14 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         limit: 99999,
       })
     );
+
     //@ts-ignore
     const nonAdminParticipants = participants.users.filter(
       (participant: any) =>
         !(participant.participant && "adminRights" in participant.participant)
     );
 
-    const participantsWithPhoto = nonAdminParticipants.filter(
-      (participant: any) =>
-        participant.photo && participant.username && participant.photo.photoId
-    );
-
-    const filteredParticipants = participantsWithPhoto.filter(
+    const filteredParticipants = nonAdminParticipants.filter(
       (participant: any) => {
         const matchesFirstName = firstName
           ? participant.firstName
@@ -334,13 +328,7 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
         const matchesLastName = lastName
           ? participant.lastName?.toLowerCase().includes(lastName.toLowerCase())
           : true;
-
-        // Проверка на премиум
-        const matchesPremium = isPremium
-          ? participant.premium === true // предполагается, что это поле существует в данных участника
-          : true;
-
-        // Проверка на игнорируемых пользователей
+        const matchesPremium = isPremium ? participant.premium === true : true;
         const isIgnored = user.ignoredUsers.includes(participant.username);
 
         return (
@@ -351,17 +339,12 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
 
     const participantsToSend = filteredParticipants.filter(
       (participant: any) => {
-        // Находим участника в dialog.participants с совпадающим username
         const matchingParticipant = dialog.participants.find(
           (p: any) => p.userId === participant.username
         );
-
-        // Если найденный участник существует и его sender совпадает с mainLogin, исключаем его
         if (matchingParticipant && matchingParticipant.sender === mainLogin) {
           return false;
         }
-
-        // В остальных случаях оставляем участника в списке
         return true;
       }
     );
@@ -370,35 +353,29 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
       .sort(() => 0.5 - Math.random())
       .slice(0, count);
 
-    // Инициализируем массив commonChats
     let commonChats: { userId: string; chats: any[] }[] = [];
-    console.log(randomParticipants);
     for (const participant of randomParticipants) {
       const entity = participant as any;
 
-      if (entity && entity.photo) {
-        const filePath = path.resolve(
-          __dirname,
-          "../images/participants/",
-          entity.username + ".png"
+      try {
+        const commonGroups: any = await client.invoke(
+          new Api.messages.GetCommonChats({
+            userId: entity.id,
+            limit: 100,
+          })
         );
 
-        try {
-          // Получаем общие группы с пользователем
-          const commonGroups: any = await client.invoke(
-            new Api.messages.GetCommonChats({
-              userId: entity.id,
-              limit: 100,
-            })
+        commonChats.push({
+          userId: String(entity.id),
+          chats: commonGroups.chats,
+        });
+
+        if (entity.photo) {
+          const filePath = path.resolve(
+            __dirname,
+            "../images/participants/",
+            entity.username + ".png"
           );
-
-          // Добавляем в массив commonChats
-          commonChats.push({
-            userId: String(entity.id),
-            chats: commonGroups.chats,
-          });
-
-          // Загружаем фото профиля
           const buffer = await client.downloadProfilePhoto(entity as any);
           if (buffer instanceof Buffer) {
             await saveFile(filePath, buffer);
@@ -407,12 +384,9 @@ todoRoutes.route("/find-users").post(async (req: Request, res: Response) => {
               `Failed to download photo: returned value is not a Buffer`
             );
           }
-        } catch (err) {
-          console.error(
-            `Failed to process participant ${entity.username}:`,
-            err
-          );
         }
+      } catch (err) {
+        console.error(`Failed to process participant ${entity.username}:`, err);
       }
     }
 
